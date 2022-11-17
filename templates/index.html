@@ -1,0 +1,30 @@
+<title>PAKO-app</title>
+
+<h1>PAKO</h1>
+
+{% if session.username %}
+<p>Moi {{session.username}}
+    <br> 
+    <a href="/logout">Kirjaudu ulos</a>
+</p>
+
+{% else %}
+<form action="/login" method="POST">
+    Käyttäjätunnus:
+    <input type="text" name="username">
+    Salasana:
+    <input type="text" name="password">
+    <input type="submit" value="Kirjaudu">
+</form>
+<a href="/register">Uusi käyttäjä</a>
+{% endif %}
+
+<hr>
+<h3>Tapahtumat</h3>
+<ul>
+{% for event in events %}
+<li>
+<a href="/event/{{ event.id }}">{{ event.name }}</a>
+</li>
+{% endfor %}
+</ul>
