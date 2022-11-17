@@ -1,15 +1,15 @@
 <form action="" method="POST">
     Käyttäjätunnus:
     <br>
-    <input type="text", name="username">
+    <input type="text" name="username" minlength="3" maxlength="20" required>
     <br>
     Salasana:
     <br>
-    <input type="text">
+    <input type="password" name="password" minlength="3" maxlength="30" required>
     <br>
     Salasana uudestaan:
     <br>
-    <input type="text">
+    <input type="password" name="password_check" minlength="3" maxlength="30" required>
     <br>
     <input type="submit", value="Luo käyttäjätunnus">
 </form>

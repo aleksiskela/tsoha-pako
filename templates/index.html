@@ -3,7 +3,7 @@
 <h1>PAKO</h1>
 
 {% if session.username %}
-<p>Moi {{session.username}}
+<p>Olet kirjautuneena sisään tunnuksella <b>{{session.username}}</b>
     <br> 
     <a href="/logout">Kirjaudu ulos</a>
 </p>
@@ -13,7 +13,7 @@
     Käyttäjätunnus:
     <input type="text" name="username">
     Salasana:
-    <input type="text" name="password">
+    <input type="password" name="password">
     <input type="submit" value="Kirjaudu">
 </form>
 <a href="/register">Uusi käyttäjä</a>
@@ -28,3 +28,9 @@
 </li>
 {% endfor %}
 </ul>
+
+{% if session.username %}
+<p>
+    <a href="/create_event">Luo uusi tapahtuma</a>
+</p>
+{% endif %}
