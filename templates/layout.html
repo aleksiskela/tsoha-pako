@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAKO-app</title>
+</head>
+<body>
+    <h1>PAKO-app</h1>
+    {% if session.username %}
+    <p>Olet kirjautuneena sisään tunnuksella <b>{{session.username}}</b>
+    <br> 
+    <a href="/logout">Kirjaudu ulos</a>
+    </p>
+
+    {% else %}
+    <form action="/login" method="POST">
+        Käyttäjätunnus:
+        <input type="text" name="username">
+        Salasana:
+        <input type="password" name="password">
+        <input type="submit" value="Kirjaudu">
+    </form>
+    <a href="/register">Uusi käyttäjä</a>
+    {% endif %}
+
+<hr>
+    {% block content %}{% endblock%}
+</body>
+</html>

@@ -1,8 +1,10 @@
-PAKO-app (Pois Arjesta, Kohti Olevaisuutta)
+PAKO-app (Pois Arjesta, Keskity Olennaiseen)
 
 Sovellus yhteisiä tapahtumia varten.
 
 Sovelluksen tarkoitus on antaa käyttäjälle mahdollisuus luoda ja osallistua yksityisten tai julkisten tapahtumien suunnitteluun.
+
+Kuvaus sovelluksen lopputavoitteesta. Lopussa tilannekatsaus:
 
 - Käyttäjä voi luoda tilin ja kirjautua profiiliinsa.
 - Käyttäjän kirjauduttua sisään, tämä näkee tulevat tapahtumat (+ mm tietoa osallitujamäärästä, countdown-laskuri, muutoksia-ilmoitus).
@@ -19,3 +21,7 @@ Sovelluksen tarkoitus on antaa käyttäjälle mahdollisuus luoda ja osallistua y
 - Muita ominaisuuksia lisätään mahdollisuuksien mukaan
 
 Sovellus soveltuu esimerkiksi juhlien, matkojen, keikkojen tai urheilutapahtumien yhteisorganisointiin.
+
+Sovelluksen pohjatyö on pääosin valmis. Tiedostorakenne on kesken. Tietokantaoperaatiot ja ohjelmalogiikka on tarkoitus siirtää omiin tiedostoihinsa seuraavassa vaiheessa. Tietokantatauluja on vasta kaksi: users ja events. Lisää tauluja luodaan seuraavassa vaiheessa. Pylintia ei olla vielä otettu käyttöön.
+
+Tässä vaiheessa käyttäjä voi nähdä luodut tapahtumat, luoda käyttäjätunnuksen, kirjautua sisään ja ulos, sisäänkirjautuneena luoda tapahtuman ja antaa tapahtumalle nimen ja kuvauksen. Sovellusta pääsee kokeilemaan osoitteessa https://tsoha-pako.fly.dev ja koodia voi tarkastella githubissa https://github.com/aleksiskela/tsoha-pako.

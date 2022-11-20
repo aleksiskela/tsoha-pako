@@ -1,4 +1,4 @@
-<title>PAKO-app</title>
+<!-- <title>PAKO-app</title>
 
 <h1>PAKO</h1>
 
@@ -19,7 +19,11 @@
 <a href="/register">Uusi käyttäjä</a>
 {% endif %}
 
-<hr>
+<hr> -->
+
+{% extends "layout.html" %}
+{% block content %}
+
 <h3>Tapahtumat</h3>
 <ul>
 {% for event in events %}
@@ -34,3 +38,5 @@
     <a href="/create_event">Luo uusi tapahtuma</a>
 </p>
 {% endif %}
+
+{% endblock %}

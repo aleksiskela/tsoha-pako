@@ -1,6 +1,16 @@
-Luo uusi tapahtuma:
+{% extends "layout.html" %}
+{% block content %}
+<h3>Luo uusi tapahtuma:</h3>
 <form action="" method="POST">
     Tapahtuman nimi:
     <input type="text" name="name">
+    <br>
+    <br>
+    Tapahtuman kuvaus:
+    <br>
+    <textarea name="description" cols="30" rows="10"></textarea>
+    <br>
+    <br>
     <input type="submit" value="Luo tapahtuma">
 </form>
+{% endblock %}

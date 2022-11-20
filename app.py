@@ -21,9 +21,17 @@ def index():
 
 @app.route("/event/<int:event_id>")
 def show_event(event_id):
-    sql = "SELECT name FROM events WHERE events.id = :event_id"
-    name = db.session.execute(sql, {"event_id": event_id}).fetchone()[0]
-    return render_template("event.html", name=name)
+    sql = "SELECT name, description FROM events WHERE events.id = :event_id"
+    # name = db.session.execute(sql, {"event_id": event_id}).fetchone()
+    # print(name[0])
+    # description = db.session.execute(sql, {"event_id": event_id}).fetchone()[1]
+    event = db.session.execute(sql, {"event_id": event_id}).fetchone()
+    print(event)
+    name = event[0]
+    description = event[1]
+    
+    return render_template("event.html", name=name, description=description)
+    # return render_template("event.html", name=name)
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -99,6 +107,7 @@ def create_event():
     
     if request.method == "POST":
         name = request.form["name"]
+        description = request.form["description"]
 
         sql = "SELECT id FROM events WHERE name=:name"
         result = db.session.execute(sql, {"name":name})
@@ -110,8 +119,8 @@ def create_event():
             return render_template("login_error.html", message="Event name taken")
 
         else:
-            sql = "INSERT INTO events (name) VALUES (:name)"
-            db.session.execute(sql, {"name":name})
+            sql = "INSERT INTO events (name, description) VALUES (:name, :description)"
+            db.session.execute(sql, {"name":name, "description":description})
             db.session.commit()
     
     return redirect("/")
