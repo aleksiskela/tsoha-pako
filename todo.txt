@@ -1,0 +1,14 @@
+TODO
+- Countdown
+- Tauluja: events:host date public/private, chat, enrolments, tasks, äänestys 
+- Mahdollisuus poistaa käyttäjätunnus, tapahtuma, ilmoittautua tapahtumaan/poistua tapahtumasta
+- Pylint käyttöönotto
+- CSS
+- Siivoa kommentit
+- Lisää visible-column tapahtumiin. Oletuksena 1 = visible, poistettaessa 0 = not visible
+- luo chat. luo Iframe.
+
+DONE
+- Tarkistukset create event formeihin 
+- Siirrä db operaatiot omaan tiedostoon
+- Siirrä routes omaan tiedostoon

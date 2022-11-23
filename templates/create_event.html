@@ -3,12 +3,12 @@
 <h3>Luo uusi tapahtuma:</h3>
 <form action="" method="POST">
     Tapahtuman nimi:
-    <input type="text" name="name">
+    <input type="text" name="name" minlength="1" maxlength="100" required>
     <br>
     <br>
     Tapahtuman kuvaus:
     <br>
-    <textarea name="description" cols="30" rows="10"></textarea>
+    <textarea name="description" cols="30" rows="10" maxlength="10000"></textarea>
     <br>
     <br>
     <input type="submit" value="Luo tapahtuma">

@@ -3,7 +3,38 @@
 {% block content %}
 <h1>{{ name }}</h1>
 <p>{{ description }}</p>
-<h4>Osallistujat:</h4>
+
+{% if session.username == creator_username %}
 <br>
-<ul></ul>
+<form action="/delete_event" method="POST">
+    <input type="hidden" name="event_id" value={{ id }}>
+    <input type="submit" value="Poista tapahtuma">
+</form>
+{% endif %}
+
+<h4>Osallistujat:</h4>
+<ul>
+    {% for enrolled in enrolments %}
+    <li>{{enrolled}}</li>
+    {% endfor %}
+</ul>
+
+{% if session.username %}
+
+{% if session.username in enrolments %}
+<form action="/leave_event" method="POST">
+    <input type="hidden" name="event_id" value={{ id }}>
+    <input type="submit" value="Peru osallistuminen">
+</form>
+{% else %}
+<form action="/enrol" method="POST">
+    <input type="hidden" name="event_id" value={{ id }}>
+    <input type="hidden" name="role" value="1">
+    <input type="submit" value="Osallistu">
+</form>
+{% endif %}
+{% endif %}
+<br>
+<a href="/messages/{{ id }}">Keskustelu</a>
+<br>
 {% endblock %}
