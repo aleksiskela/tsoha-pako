@@ -4,6 +4,7 @@ import events
 import users
 import messages
 import voting
+import tasks
 
 @app.route("/")
 def index():
@@ -165,3 +166,34 @@ def add_votable():
     voting.add_votable(item, event_id)
 
     return redirect("/voting/"+event_id)
+
+@app.route("/tasks/<int:event_id>")
+def show_tasks(event_id):
+    event_tasks = tasks.get_event_tasks(event_id)
+    return render_template("tasks.html", event_tasks=event_tasks, event_id=event_id)
+
+@app.route("/set_volunteer", methods=["POST"])
+def set_volunteer():
+    task_id = int(request.form["task_id"])
+    user_id = users.get_my_id()
+
+    event_id = tasks.set_volunteer(user_id, task_id)
+
+    return redirect("/tasks/"+event_id)
+
+@app.route("/withdraw", methods=["POST"])
+def withdraw():
+    task_id = int(request.form["task_id"])
+
+    event_id = tasks.withdraw(task_id)
+
+    return redirect("/tasks/"+event_id)
+
+@app.route("/new_task", methods=["POST"])
+def add_task():
+    task = request.form["task"]
+    event_id = request.form["event_id"]
+
+    tasks.add_task(task, event_id)
+
+    return redirect("/tasks/"+event_id)

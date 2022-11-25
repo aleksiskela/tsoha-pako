@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h4>Tehtävät</h4>
+<table>
+    <tr>
+        <th>Tehtävä</th>
+        <th>Tekijä</th>
+        {% if session.username %}
+        <th>Nakki</th>
+        {% endif %}
+    </tr>
+    {% for task in event_tasks %}
+    <tr>
+        <td>{{ task.task_name }}</td>
+        <td>
+            {% if task.username %}
+            {{ task.username }}
+            {% endif %}
+        </td>
+        {% if session.username %}
+        <td>
+            {% if not task.username %}
+            <form action="/set_volunteer" method="POST">
+                <input type="hidden" name="task_id" value={{ task.id }}>
+                <input type="submit" value="Napsauta">
+            </form>
+            {% elif task.username == session.username %}
+            <form action="/withdraw" method="POST">
+                <input type="hidden" name="task_id" value={{ task.id }}>
+                <input type="submit" value="Peru">
+            </form>
+            {% endif %}
+        </td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>
+
+
+<br>
+{% if session.username %}
+Lisää tehtävä:
+<form action="/new_task" method="POST">
+    <input type="hidden" name="event_id" value={{ event_id }}>
+    <input type="text" name="task" minlength="1" maxlength="50" required>
+    <input type="submit" value="Lisää">
+</form>
+<br>
+<form action="">
+    <input type="submit" value="Arvo kaikki">
+    <input type="submit" value="Arvo loput">
+</form>
+{% endif %}
+
+{% endblock %}
