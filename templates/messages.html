@@ -1,12 +1,12 @@
 {% for message in messages %}
 {{message.username}}: {{message.content}} <br>
 {% endfor %}
-{% if session.username %}
+{% if session.username in enrolments %}
 <form action="" method="POST">
     <input type="text" name="content" size="100" minlength="1" maxlength="100" autocomplete="off" required> <!-- tee niin että mukautuu selaimen leveyteen -->
     <!-- <textarea name="content" id="" cols="60" rows="1"></textarea> -->
     <input type="submit" value="Lähetä">
 </form>
 {% else %}
-<h4>Kirjaudu sisään osallistuaksesi keskusteluun</h4>
+<h4>Osallistu tapahtumaan osallistuaksesi keskusteluun</h4>
 {% endif %}

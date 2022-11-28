@@ -15,8 +15,9 @@ def index():
 def show_event(event_id):
     event = events.get_event(event_id)
     
-    enrolment_data = events.get_enrolments(event_id)
-    enrolments = [user.username for user in enrolment_data]
+    # enrolment_data = events.get_enrolments(event_id)
+    # enrolments = [user.username for user in enrolment_data]
+    enrolments = events.get_enrolments(event_id)
 
     name = event.name
     description = event.description
@@ -126,8 +127,9 @@ def show_messages(event_id):
         messages.send_message(content, user_id, event_id)
        
     event_messages = messages.get_event_messages(event_id)
+    enrolments = events.get_enrolments(event_id)
     
-    return render_template("/messages.html", messages=event_messages)
+    return render_template("/messages.html", messages=event_messages, enrolments=enrolments)
 
 @app.route("/voting/<int:event_id>", methods=["GET","POST"])
 def show_votes(event_id):
@@ -151,13 +153,15 @@ def show_votes(event_id):
 
 
     event_votables = voting.get_votables(event_id)
+    enrolments = events.get_enrolments(event_id)
 
     try:
         already_voted = voting.get_already_voted(users.get_my_id())
-    except:
+    except KeyError:
         already_voted = []
 
-    return render_template("voting.html", votables=event_votables, already_voted=already_voted, event_id=event_id)
+
+    return render_template("voting.html", votables=event_votables, already_voted=already_voted, event_id=event_id, enrolments=enrolments)
 
 @app.route("/add_votable", methods=["POST"])
 def add_votable():
@@ -170,7 +174,9 @@ def add_votable():
 @app.route("/tasks/<int:event_id>")
 def show_tasks(event_id):
     event_tasks = tasks.get_event_tasks(event_id)
-    return render_template("tasks.html", event_tasks=event_tasks, event_id=event_id)
+    enrolments = events.get_enrolments(event_id)
+
+    return render_template("tasks.html", event_tasks=event_tasks, event_id=event_id, enrolments=enrolments)
 
 @app.route("/set_volunteer", methods=["POST"])
 def set_volunteer():
@@ -197,3 +203,12 @@ def add_task():
     tasks.add_task(task, event_id)
 
     return redirect("/tasks/"+event_id)
+
+@app.route("/randomize_all", methods=["POST"])
+def randomize_all():
+    event_id = request.form["event_id"]
+    enrolments = events.get_enrolments(event_id)
+
+    tasks.randomize_all(event_id, enrolments)
+
+    return redirect("/tasks/" + event_id)

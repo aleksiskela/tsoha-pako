@@ -18,7 +18,7 @@
             {{ task.username }}
             {% endif %}
         </td>
-        {% if session.username %}
+        {% if session.username in enrolments %}
         <td>
             {% if not task.username %}
             <form action="/set_volunteer" method="POST">
@@ -39,7 +39,7 @@
 
 
 <br>
-{% if session.username %}
+{% if session.username in enrolments %}
 Lisää tehtävä:
 <form action="/new_task" method="POST">
     <input type="hidden" name="event_id" value={{ event_id }}>
@@ -47,10 +47,13 @@ Lisää tehtävä:
     <input type="submit" value="Lisää">
 </form>
 <br>
-<form action="">
+<form action="/randomize_all" method="POST">
+    <input type="hidden" name="event_id" value={{ event_id }}>
     <input type="submit" value="Arvo kaikki">
-    <input type="submit" value="Arvo loput">
+    <!-- <input type="submit" value="Arvo loput"> -->
 </form>
+{% else %}
+<h4>Osallistu tapahtumaan osallistuaksesi tehtävänjakoon</h4>
 {% endif %}
 
 {% endblock %}

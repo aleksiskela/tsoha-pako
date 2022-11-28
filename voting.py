@@ -28,4 +28,6 @@ def get_already_voted(user_id):
     sql = "SELECT votable_id FROM votes WHERE user_id=:user_id"
     result = db.session.execute(sql, {"user_id":user_id}).fetchall()
     already_voted = [votable.votable_id for votable in result]
+    if already_voted == None:
+        already_voted = []
     return already_voted

@@ -1,7 +1,7 @@
 from db import db
 
 def get_all_events():
-    sql = db.session.execute("SELECT id, name FROM events WHERE visible=TRUE")
+    sql = db.session.execute("SELECT e.id, e.name, u.username FROM events e LEFT JOIN users u ON u.id=e.creator_id WHERE visible=TRUE")
     events = sql.fetchall()
     return events
 
@@ -27,8 +27,9 @@ def cancel_enrolment(event_id, user_id):
 
 def get_enrolments(event_id):
     sql = "SELECT DISTINCT u.username FROM users u, enrolments e WHERE u.id=e.user_id AND e.event_id=:event_id"
-    result = db.session.execute(sql, {"event_id":event_id})
-    return result.fetchall()
+    result = db.session.execute(sql, {"event_id":event_id}).fetchall()
+    enrolments = [user.username for user in result]
+    return enrolments
 
 def delete_event(event_id):
     sql = "UPDATE events SET visible=FALSE WHERE id=:event_id"
