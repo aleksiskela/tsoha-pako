@@ -50,7 +50,10 @@ Lisää tehtävä:
 <form action="/randomize_all" method="POST">
     <input type="hidden" name="event_id" value={{ event_id }}>
     <input type="submit" value="Arvo kaikki">
-    <!-- <input type="submit" value="Arvo loput"> -->
+</form>
+<form action="/randomize_unfilled" method="POST">
+    <input type="hidden" name="event_id" value={{ event_id }}>
+    <input type="submit" value="Arvo tyhjäksi jääneet">
 </form>
 {% else %}
 <h4>Osallistu tapahtumaan osallistuaksesi tehtävänjakoon</h4>

@@ -7,12 +7,12 @@ TODO
 - Siivoa kommentit
 - luo Iframe. (?)
 - mahdollisuus poistaa äänestyksiä, tehtäviä, käyttäjätunnus
-- osallistujatarkastus viesteihin, tehtäviin, äänestyksiin
-- arvonnat tehtäviin
 - layout niin että event etusivulla nimi, kuvaus, Countdown, osallistu/poistu-nappi (ja tieto onko osallistunut vai ei)
     - osallistujat, viestit, äänestykset ja tehtävät alasivuille. rakenna yläpalkki mistä siirtyä alasivuille.
 
 DONE
+- osallistujatarkastus viesteihin, tehtäviin, äänestyksiin
+- arvonnat tehtäviin
 - Lisää visible-column tapahtumiin. Oletuksena 1 = visible, poistettaessa 0 = not visible
 - Tarkistukset create event formeihin 
 - Siirrä db operaatiot omaan tiedostoon

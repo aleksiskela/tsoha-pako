@@ -212,3 +212,10 @@ def randomize_all():
     tasks.randomize_all(event_id, enrolments)
 
     return redirect("/tasks/" + event_id)
+
+@app.route("/randomize_unfilled", methods=["POST"])
+def randomize_unfilled():
+    event_id = request.form["event_id"]
+    tasks.randomize_unfilled(event_id)
+
+    return redirect("/tasks/" + event_id)

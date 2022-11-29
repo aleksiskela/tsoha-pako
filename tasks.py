@@ -1,5 +1,5 @@
 from db import db
-from random import shuffle, sample
+from random import shuffle, sample, choice
 
 def get_event_tasks(event_id):
     sql = "SELECT t.id, t.task_name, u.username FROM tasks t LEFT JOIN users u ON t.volunteer=u.id WHERE event_id=:event_id ORDER BY t.id"
@@ -48,4 +48,41 @@ def randomize_all(event_id, enrolments):
         db.session.execute(sql, {"username":username, "task":task})
         db.session.commit()
 
+def randomize_unfilled(event_id):
+    sql = "SELECT id, volunteer FROM tasks WHERE event_id=:event_id"
+    query = db.session.execute(sql, {"event_id":event_id}).fetchall()
+    sql = "SELECT user_id FROM enrolments WHERE event_id=:event_id"
+    result = db.session.execute(sql, {"event_id":event_id}).fetchall()
+    enrolments = [enrolment.user_id for enrolment in result]
+
+    def randomize_remaining(query, enrolments):
+        unfilled = [row for row in query if row[1] == None]
+        if len(unfilled) == 0:
+            return query
+
+        tasks_per_user = {}
+
+        for user in enrolments:
+            tasks_per_user[user] = 0
+            for row in query:
+                if row[1] != None:
+                    if row[1] == user:
+                        tasks_per_user[user] += 1
+
+        laziest = [user for user, tasks in tasks_per_user.items() if tasks == min(tasks_per_user.values())]
+        shuffle(laziest)
+
+        while len(laziest) > 0 and len(unfilled) > 0:
+            assignable = choice(unfilled)
+            unfilled.remove(assignable)
+            assign = (assignable[0], laziest.pop(0))
+            query.remove(assignable)
+            query.append(assign)
+
+        return randomize_remaining(query, enrolments)
+
+    randomized = randomize_remaining(query, enrolments)
+
+    for task in randomized:
+        set_volunteer(task[1], task[0])
     
