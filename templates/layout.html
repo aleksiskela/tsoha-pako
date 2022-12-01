@@ -7,13 +7,12 @@
 </head>
 <body>
     <a href="/">Home</a>
-    <h1>PAKO-app</h1>
+    <!-- <h1>PAKO-app</h1> -->
 
-    {% if session.username %}
-    <p>Olet kirjautuneena sisään tunnuksella <b>{{session.username}}</b>
-    <br> 
-    <a href="/logout">Kirjaudu ulos</a>
-    </p>
+    <!-- {% if session.username %}
+    Olet kirjautuneena sisään tunnuksella <b>{{session.username}}</b> -->
+    <!-- <br>  -->
+    <!-- <a href="/logout">Kirjaudu ulos</a>
 
     {% else %}
     <form action="/login" method="POST">
@@ -24,9 +23,9 @@
         <input type="submit" value="Kirjaudu">
     </form>
     <a href="/register">Uusi käyttäjä</a>
-    {% endif %}
+    {% endif %} -->
 
-<hr>
-    {% block content %}{% endblock%}
+<!-- <hr> -->
+    {% block content %}{% endblock %}
 </body>
 </html>

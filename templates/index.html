@@ -23,7 +23,23 @@
 
 {% extends "layout.html" %}
 {% block content %}
+<h1>PAKO-app</h1>
+{% if session.username %}
+    Olet kirjautuneena sisään tunnuksella <b>{{session.username}}</b>
+    <br> 
+    <a href="/logout">Kirjaudu ulos</a>
 
+    {% else %}
+    <form action="/login" method="POST">
+        Käyttäjätunnus:
+        <input type="text" name="username">
+        Salasana:
+        <input type="password" name="password">
+        <input type="submit" value="Kirjaudu">
+    </form>
+    <a href="/register">Uusi käyttäjä</a>
+    {% endif %}
+<hr>
 <h3>Tapahtumat</h3>
 <ul>
 {% for event in events %}

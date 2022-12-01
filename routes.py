@@ -1,5 +1,6 @@
 from app import app
 from flask import render_template, request, redirect
+from datetime import datetime
 import events
 import users
 import messages
@@ -23,8 +24,31 @@ def show_event(event_id):
     description = event.description
     creator_id = event.creator_id
     creator_username = users.get_username(creator_id)
+    location = event.location
+
+    if not location:
+        location = "-"
+    if len(location) == 0:
+        location = "-"
+
+    date = "-"
+    time = "-"
+    countdown = "-"
+
+    try:
+        timestamp = event.datetime
+        date = timestamp.strftime("%d.%m.%y")
+        time = timestamp.strftime("%H:%M")
+        countdown = timestamp.date()-datetime.today().date()
+        countdown = countdown.days
+
     
-    return render_template("event.html", name=name, description=description, id=event_id, creator_username=creator_username, enrolments=enrolments)
+    except:
+        pass
+    
+    return render_template("event.html", name=name, description=description, event_id=event_id, 
+                            creator_username=creator_username, enrolments=enrolments, date=date, 
+                            time=time, location=location, countdown=countdown)
 
 
 @app.route("/create_event", methods=["GET","POST"])
@@ -37,6 +61,14 @@ def create_event():
         description = request.form["description"]
         creator = users.get_my_id()
 
+        date = request.form["date"]
+        time = request.form["time"]
+        datetime = date + " " + time
+        if len(datetime) == 1:
+            datetime = None
+
+        location = request.form["location"]
+
         if len(name) > 100:
             return render_template("error.html", message="Tapahtuman nimessä saa olla korkeintaan 100 merkkiä")
         if len(name.strip()) < 1:
@@ -46,9 +78,51 @@ def create_event():
         if len(description) == 0:
             description = "Tapahtumalla ei ole kuvausta"
 
-        events.create_event(name, description, creator)
+        events.create_event(name, description, creator, datetime, location)
     
     return redirect("/")
+
+@app.route("/edit_event/<int:event_id>", methods=["GET", "POST"])
+def edit_event(event_id):
+    if request.method == "GET":
+        event = events.get_event(event_id)
+        name = event.name
+
+        try:
+            timestamp = event.datetime
+            date = timestamp.date()
+            time = timestamp.time()
+        except AttributeError:
+            date = ""
+            time = ""
+
+        return render_template("edit_event.html", event_id=event_id, event=event, name=name, date=date, time=time)
+
+    if request.method == "POST":
+        name = request.form["name"]
+        description = request.form["description"]
+
+        date = request.form["date"]
+        time = request.form["time"]
+        datetime = date + " " + time
+
+        if len(datetime) == 1:
+            datetime = None
+
+        location = request.form["location"]
+
+        if len(name) > 100:
+            return render_template("error.html", message="Tapahtuman nimessä saa olla korkeintaan 100 merkkiä")
+        if len(name.strip()) < 1:
+            return render_template("error.html", message="Tapahtuman nimessä on oltava vähintään yksi merkki")
+        if len(description) > 10000:
+            return render_template("error.html", message="Tapahtuman kuvauksessa saa olla korkeintaan 10 000 merkkiä")
+        if len(description) == 0:
+            description = "Tapahtumalla ei ole kuvausta"
+
+        events.edit_event(event_id, name, description, datetime, location)
+
+    return redirect("/event/"+str(event_id))
 
 @app.route("/delete_event", methods=["POST"])
 def delete_event():
@@ -128,8 +202,9 @@ def show_messages(event_id):
        
     event_messages = messages.get_event_messages(event_id)
     enrolments = events.get_enrolments(event_id)
+    name = events.get_event_name(event_id)
     
-    return render_template("/messages.html", messages=event_messages, enrolments=enrolments)
+    return render_template("/messages.html", messages=event_messages, enrolments=enrolments, event_id=event_id, name=name)
 
 @app.route("/voting/<int:event_id>", methods=["GET","POST"])
 def show_votes(event_id):
@@ -154,6 +229,7 @@ def show_votes(event_id):
 
     event_votables = voting.get_votables(event_id)
     enrolments = events.get_enrolments(event_id)
+    name = events.get_event_name(event_id)
 
     try:
         already_voted = voting.get_already_voted(users.get_my_id())
@@ -161,7 +237,7 @@ def show_votes(event_id):
         already_voted = []
 
 
-    return render_template("voting.html", votables=event_votables, already_voted=already_voted, event_id=event_id, enrolments=enrolments)
+    return render_template("voting.html", votables=event_votables, already_voted=already_voted, event_id=event_id, enrolments=enrolments, name=name)
 
 @app.route("/add_votable", methods=["POST"])
 def add_votable():
@@ -175,8 +251,9 @@ def add_votable():
 def show_tasks(event_id):
     event_tasks = tasks.get_event_tasks(event_id)
     enrolments = events.get_enrolments(event_id)
+    name = events.get_event_name(event_id)
 
-    return render_template("tasks.html", event_tasks=event_tasks, event_id=event_id, enrolments=enrolments)
+    return render_template("tasks.html", event_tasks=event_tasks, event_id=event_id, enrolments=enrolments, name=name)
 
 @app.route("/set_volunteer", methods=["POST"])
 def set_volunteer():

@@ -1,3 +1,6 @@
+{% extends "layout.html" %}
+{% block content %}
+{% include "event_layout.html" %}
 {% for message in messages %}
 {{message.username}}: {{message.content}} <br>
 {% endfor %}
@@ -10,3 +13,4 @@
 {% else %}
 <h4>Osallistu tapahtumaan osallistuaksesi keskusteluun</h4>
 {% endif %}
+{% endblock %}

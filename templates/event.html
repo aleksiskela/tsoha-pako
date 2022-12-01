@@ -1,16 +1,24 @@
 {% extends "layout.html" %}
-
 {% block content %}
-<h1>{{ name }}</h1>
-<p>{{ description }}</p>
+{% include "event_layout.html" %}
 
 {% if session.username == creator_username %}
-<br>
 <form action="/delete_event" method="POST">
-    <input type="hidden" name="event_id" value={{ id }}>
+    <input type="hidden" name="event_id" value={{ event_id }}>
     <input type="submit" value="Poista tapahtuma">
 </form>
+<br>
+<a href="/edit_event/{{ event_id }}">Muokkaa tapahtumaa</a>
+<!-- <form action="/edit_event/{{ event_id}}" method="POST">
+    <input type="hidden" name="event_id" value={{ event_id }}>
+    <input type="submit" value="Muokkaa tapahtumaa">
+</form> -->
 {% endif %}
+<p>{{ description }}</p>
+<p><b>TJ: {{ countdown }}</b></p>
+<p>Päivämäärä: {{ date }} <br> 
+Kellonaika: {{ time }} <br>
+Paikka: {{ location }}</p>
 
 <h4>Osallistujat:</h4>
 <ul>
@@ -23,12 +31,12 @@
 
 {% if session.username in enrolments %}
 <form action="/leave_event" method="POST">
-    <input type="hidden" name="event_id" value={{ id }}>
+    <input type="hidden" name="event_id" value={{ event_id }}>
     <input type="submit" value="Peru osallistuminen">
 </form>
 {% else %}
 <form action="/enrol" method="POST">
-    <input type="hidden" name="event_id" value={{ id }}>
+    <input type="hidden" name="event_id" value={{ event_id }}>
     <input type="hidden" name="role" value="1">
     <input type="submit" value="Osallistu">
 </form>
@@ -36,11 +44,11 @@
 {% else %}
 <h4>Kirjaudu sisään osallistuaksesi tapahtumaan</h4>
 {% endif %}
-<br>
+<!-- <br>
 <a href="/messages/{{ id }}">Keskustelu</a>
 <br>
 <a href="/voting/{{ id }}">Äänestys</a>
 <br>
 <a href="/tasks/{{ id }}">Tehtävät</a>
-<br>
+<br> -->
 {% endblock %}

@@ -5,12 +5,15 @@ TODO
 - Pylint käyttöönotto
 - CSS
 - Siivoa kommentit
+- block title
 - luo Iframe. (?)
 - mahdollisuus poistaa äänestyksiä, tehtäviä, käyttäjätunnus
-- layout niin että event etusivulla nimi, kuvaus, Countdown, osallistu/poistu-nappi (ja tieto onko osallistunut vai ei)
-    - osallistujat, viestit, äänestykset ja tehtävät alasivuille. rakenna yläpalkki mistä siirtyä alasivuille.
+- tarkastukset KAIKILLE INPUTEILLE
+- muokkaa niin että jos ajan tallentaa -- -- niin ei näytä 00:00. Pitää varmaan muokata taulua...
 
 DONE
+- layout niin että event etusivulla nimi, kuvaus, Countdown, osallistu/poistu-nappi (ja tieto onko osallistunut vai ei)
+    - osallistujat, viestit, äänestykset ja tehtävät alasivuille. rakenna yläpalkki mistä siirtyä alasivuille.
 - osallistujatarkastus viesteihin, tehtäviin, äänestyksiin
 - arvonnat tehtäviin
 - Lisää visible-column tapahtumiin. Oletuksena 1 = visible, poistettaessa 0 = not visible

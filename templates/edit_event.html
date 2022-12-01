@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block content %}
+{% include "event_layout.html" %}
+
+<h3>Muokkaa tapahtumaa:</h3>
+<form action="" method="POST">
+    Tapahtuman nimi:
+    <input type="text" name="name" value="{{ event.name|safe }}" minlength="1" maxlength="100" required>
+    <br>
+    <br>
+    Tapahtuman kuvaus:
+    <br>
+    <textarea name="description" cols="30" rows="10" maxlength="5000">{{ event.description }}</textarea>
+    <br>
+    Päivämäärä: <br>
+    <input type="date" name="date" value={{ date }}>
+    <br>
+    Aika: <br>
+    <input type="time" name="time" value="{{ time }}">
+    <br>
+    Paikka: <br>
+    <input type="text" name="location" value="{{ event.location|safe }}">
+    <br><br>
+    <input type="submit" value="Tallenna muutokset">
+</form>
+{% endblock %}

@@ -6,13 +6,22 @@ def get_all_events():
     return events
 
 def get_event(event_id):
-    sql = "SELECT id, name, description, creator_id FROM events WHERE events.id = :event_id"
+    sql = "SELECT id, name, description, creator_id, datetime, location FROM events WHERE events.id = :event_id"
     event = db.session.execute(sql, {"event_id": event_id}).fetchone()
     return event
 
-def create_event(name, description, creator_id):
-    sql = "INSERT INTO events (name, description, creator_id) VALUES (:name, :description, :creator_id)"
-    db.session.execute(sql, {"name":name, "description":description, "creator_id":creator_id})
+def get_event_name(event_id):
+    sql = "SELECT name FROM events WHERE id=:event_id"
+    return db.session.execute(sql, {"event_id":event_id}).fetchone()[0]
+
+def create_event(name, description, creator_id, datetime, location):
+    sql = "INSERT INTO events (name, description, creator_id, datetime, location) VALUES (:name, :description, :creator_id, :datetime, :location)"
+    db.session.execute(sql, {"name":name, "description":description, "creator_id":creator_id, "datetime":datetime, "location":location})
+    db.session.commit()
+
+def edit_event(event_id, name, description, datetime, location):
+    sql = "UPDATE events SET name=:name, description=:description, datetime=:datetime, location=:location WHERE id=:event_id"
+    db.session.execute(sql, {"event_id": event_id, "name":name, "description":description, "datetime":datetime, "location":location})
     db.session.commit()
 
 def enrol(event_id, user_id, role):
