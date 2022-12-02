@@ -20,11 +20,13 @@
             {% if votable.id in already_voted %}
             <form action="" method="POST">
                 <input type="hidden" name="votable_id" value={{ votable.id }}>
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <input type="submit" name="vote" value="Vaihda">
             </form>
             {% else %}
             <form action="" method="POST">
                 <input type="hidden" name="votable_id" value={{ votable.id }} >
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <input type="submit" name="vote" value="Jaa">
                 <!-- <input type="submit" name="vote" values="Ihasama"> -->
                 <input type="submit" name="vote" value="Ei">
@@ -44,6 +46,7 @@
 Lisää kohde:
 <form action="/add_votable" method="POST">
     <input type="hidden" name="event_id" value={{ event_id }}>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="text" name="item" minlength="1" maxlength="50" required>
     <input type="submit" value="Lisää">
 </form>

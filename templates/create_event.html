@@ -8,7 +8,7 @@
     <br>
     Tapahtuman kuvaus:
     <br>
-    <textarea name="description" cols="30" rows="10" maxlength="5000"></textarea>
+    <textarea name="description" cols="30" rows="10" maxlength="2000"></textarea>
     <br>
     Päivämäärä: <br>
     <input type="date" name="date">
@@ -17,8 +17,9 @@
     <input type="time" name="time">
     <br>
     Paikka: <br>
-    <input type="text" name="location">
+    <input type="text" name="location" maxlength="100">
     <br><br>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="submit" value="Luo tapahtuma">
 </form>
 {% endblock %}

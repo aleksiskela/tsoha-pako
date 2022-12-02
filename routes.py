@@ -1,6 +1,6 @@
-from app import app
-from flask import render_template, request, redirect
 from datetime import datetime
+from flask import render_template, request, redirect
+from app import app
 import events
 import users
 import messages
@@ -15,7 +15,7 @@ def index():
 @app.route("/event/<int:event_id>")
 def show_event(event_id):
     event = events.get_event(event_id)
-    
+
     # enrolment_data = events.get_enrolments(event_id)
     # enrolments = [user.username for user in enrolment_data]
     enrolments = events.get_enrolments(event_id)
@@ -42,12 +42,12 @@ def show_event(event_id):
         countdown = timestamp.date()-datetime.today().date()
         countdown = countdown.days
 
-    
+
     except:
         pass
-    
-    return render_template("event.html", name=name, description=description, event_id=event_id, 
-                            creator_username=creator_username, enrolments=enrolments, date=date, 
+
+    return render_template("event.html", name=name, description=description, event_id=event_id,
+                            creator_username=creator_username, enrolments=enrolments, date=date,
                             time=time, location=location, countdown=countdown)
 
 
@@ -55,31 +55,38 @@ def show_event(event_id):
 def create_event():
     if request.method == "GET":
         return render_template("create_event.html")
-    
+
     if request.method == "POST":
+        users.check_csrf()
         name = request.form["name"]
         description = request.form["description"]
         creator = users.get_my_id()
 
         date = request.form["date"]
         time = request.form["time"]
-        datetime = date + " " + time
-        if len(datetime) == 1:
-            datetime = None
+        timestamp = date + " " + time
+        if len(timestamp) == 1:
+            timestamp = None
 
         location = request.form["location"]
 
         if len(name) > 100:
-            return render_template("error.html", message="Tapahtuman nimessä saa olla korkeintaan 100 merkkiä")
+            return render_template("error.html",
+                                    message="Tapahtuman nimessä saa olla korkeintaan 100 merkkiä")
         if len(name.strip()) < 1:
-            return render_template("error.html", message="Tapahtuman nimessä on oltava vähintään yksi merkki")
-        if len(description) > 10000:
-            return render_template("error.html", message="Tapahtuman kuvauksessa saa olla korkeintaan 10 000 merkkiä")
+            return render_template("error.html",
+                                    message="Tapahtuman nimessä on oltava vähintään yksi merkki")
+        if len(description) > 2000:
+            return render_template("error.html",
+                                message="Tapahtuman kuvauksessa saa olla korkeintaan 2000 merkkiä")
         if len(description) == 0:
             description = "Tapahtumalla ei ole kuvausta"
+        if len(location) > 100:
+            return render_template("error.html",
+                                    message="Paikkatieto saa olla korkeintaan 100 merkkiä")
 
-        events.create_event(name, description, creator, datetime, location)
-    
+        events.create_event(name, description, creator, timestamp, location)
+
     return redirect("/")
 
 @app.route("/edit_event/<int:event_id>", methods=["GET", "POST"])
@@ -96,42 +103,52 @@ def edit_event(event_id):
             date = ""
             time = ""
 
-        return render_template("edit_event.html", event_id=event_id, event=event, name=name, date=date, time=time)
+        return render_template("edit_event.html", event_id=event_id,
+                                event=event, name=name, date=date, time=time)
 
     if request.method == "POST":
+        users.check_csrf()
         name = request.form["name"]
         description = request.form["description"]
 
         date = request.form["date"]
         time = request.form["time"]
-        datetime = date + " " + time
+        timestamp = date + " " + time
 
-        if len(datetime) == 1:
-            datetime = None
+        if len(timestamp) == 1:
+            timestamp = None
 
         location = request.form["location"]
 
         if len(name) > 100:
-            return render_template("error.html", message="Tapahtuman nimessä saa olla korkeintaan 100 merkkiä")
+            return render_template("error.html",
+                                    message="Tapahtuman nimessä saa olla korkeintaan 100 merkkiä")
         if len(name.strip()) < 1:
-            return render_template("error.html", message="Tapahtuman nimessä on oltava vähintään yksi merkki")
-        if len(description) > 10000:
-            return render_template("error.html", message="Tapahtuman kuvauksessa saa olla korkeintaan 10 000 merkkiä")
+            return render_template("error.html",
+                                    message="Tapahtuman nimessä on oltava vähintään yksi merkki")
+        if len(description) > 2000:
+            return render_template("error.html",
+                                message="Tapahtuman kuvauksessa saa olla korkeintaan 2000 merkkiä")
         if len(description) == 0:
             description = "Tapahtumalla ei ole kuvausta"
+        if len(location) > 100:
+            return render_template("error.html",
+                                    message="Paikkatieto saa olla korkeintaan 100 merkkiä")
 
-        events.edit_event(event_id, name, description, datetime, location)
+        events.edit_event(event_id, name, description, timestamp, location)
 
     return redirect("/event/"+str(event_id))
 
 @app.route("/delete_event", methods=["POST"])
 def delete_event():
+    users.check_csrf()
     event_id = request.form["event_id"]
     events.delete_event(event_id)
     return redirect("/")
 
 @app.route("/enrol", methods=["POST"])
 def enrol():
+    users.check_csrf()
     event_id = request.form["event_id"]
     role = request.form["role"]
     user_id = users.get_my_id()
@@ -142,6 +159,7 @@ def enrol():
 
 @app.route("/leave_event", methods=["POST"])
 def cancel_enrolment():
+    users.check_csrf()
     event_id = request.form["event_id"]
     user_id = users.get_my_id()
 
@@ -155,7 +173,8 @@ def login():
     password = request.form["password"]
 
     if not users.login(username, password):
-        return render_template("/error.html", message="Tunnus tai salasana väärin")
+        return render_template("/error.html",
+                                message="Tunnus tai salasana väärin")
 
     return redirect("/")
 
@@ -168,20 +187,24 @@ def logout():
 def register():
     if request.method == "GET":
         return render_template("register.html")
-    
+
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
         password_check = request.form["password_check"]
 
         if users.username_exists(username):
-            return render_template("error.html", message="Käyttäjätunnus varattu")
+            return render_template("error.html",
+                                    message="Käyttäjätunnus varattu")
 
         if password != password_check:
-            return render_template("error.html", message="Salasanat eivät täsmää")
+            return render_template("error.html",
+                                    message="Salasanat eivät täsmää")
 
         if not 3 <= len(username) <= 20 or not 3 <= len(password) <= 30:
-            return render_template("error.html", message="Yritit kiertää")
+            return render_template("error.html",
+                                message="""Käyttäjätunnuksessa oltava 3-20 merkkiä
+                                ja salasanassa 3-30 merkkiä""")
 
         users.register(username, password)
 
@@ -195,25 +218,27 @@ def show_messages(event_id):
     #     return render_template("messages.html", messages=event_messages)
 
     if request.method == "POST":
+        users.check_csrf()
         content = request.form["content"]
         user_id = users.get_my_id()
-        
+
+        if not 1 <= len(content) <= 100:
+            return render_template("error.html",
+                                    message="Viestissä oltava 1-100 merkkiä")
+
         messages.send_message(content, user_id, event_id)
-       
+
     event_messages = messages.get_event_messages(event_id)
     enrolments = events.get_enrolments(event_id)
     name = events.get_event_name(event_id)
-    
-    return render_template("/messages.html", messages=event_messages, enrolments=enrolments, event_id=event_id, name=name)
+
+    return render_template("/messages.html", messages=event_messages,
+                            enrolments=enrolments, event_id=event_id, name=name)
 
 @app.route("/voting/<int:event_id>", methods=["GET","POST"])
 def show_votes(event_id):
-    # if request.method == "GET": 
-    #     event_votables = voting.get_votables(event_id)
-
-    #     return render_template("voting.html", votables=event_votables, event_id=event_id)
-    
     if request.method == "POST":
+        users.check_csrf()
         votable_id = int(request.form["votable_id"])
         vote = request.form["vote"]
         if vote == "Jaa":
@@ -237,12 +262,20 @@ def show_votes(event_id):
         already_voted = []
 
 
-    return render_template("voting.html", votables=event_votables, already_voted=already_voted, event_id=event_id, enrolments=enrolments, name=name)
+    return render_template("voting.html", votables=event_votables,
+                        already_voted=already_voted, event_id=event_id,
+                        enrolments=enrolments, name=name)
 
 @app.route("/add_votable", methods=["POST"])
 def add_votable():
+    users.check_csrf()
     item = request.form["item"]
     event_id = request.form["event_id"]
+
+    if not 1 <= len(item) <= 50:
+        return render_template("error.html",
+                                message="Kohteen nimen oltava 1-50 merkkiä")
+
     voting.add_votable(item, event_id)
 
     return redirect("/voting/"+event_id)
@@ -253,10 +286,12 @@ def show_tasks(event_id):
     enrolments = events.get_enrolments(event_id)
     name = events.get_event_name(event_id)
 
-    return render_template("tasks.html", event_tasks=event_tasks, event_id=event_id, enrolments=enrolments, name=name)
+    return render_template("tasks.html", event_tasks=event_tasks,
+                            event_id=event_id, enrolments=enrolments, name=name)
 
 @app.route("/set_volunteer", methods=["POST"])
 def set_volunteer():
+    users.check_csrf()
     task_id = int(request.form["task_id"])
     user_id = users.get_my_id()
 
@@ -266,6 +301,7 @@ def set_volunteer():
 
 @app.route("/withdraw", methods=["POST"])
 def withdraw():
+    users.check_csrf()
     task_id = int(request.form["task_id"])
 
     event_id = tasks.withdraw(task_id)
@@ -274,8 +310,13 @@ def withdraw():
 
 @app.route("/new_task", methods=["POST"])
 def add_task():
+    users.check_csrf()
     task = request.form["task"]
     event_id = request.form["event_id"]
+
+    if not 1 <= len(task) <= 50:
+        return render_template("error.html",
+                                message="Tehtävän nimen oltava 1-50 merkkiä")
 
     tasks.add_task(task, event_id)
 
@@ -283,6 +324,7 @@ def add_task():
 
 @app.route("/randomize_all", methods=["POST"])
 def randomize_all():
+    users.check_csrf()
     event_id = request.form["event_id"]
     enrolments = events.get_enrolments(event_id)
 
@@ -292,6 +334,7 @@ def randomize_all():
 
 @app.route("/randomize_unfilled", methods=["POST"])
 def randomize_unfilled():
+    users.check_csrf()
     event_id = request.form["event_id"]
     tasks.randomize_unfilled(event_id)
 

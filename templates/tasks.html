@@ -23,11 +23,13 @@
             {% if not task.username %}
             <form action="/set_volunteer" method="POST">
                 <input type="hidden" name="task_id" value={{ task.id }}>
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <input type="submit" value="Napsauta">
             </form>
             {% elif task.username == session.username %}
             <form action="/withdraw" method="POST">
                 <input type="hidden" name="task_id" value={{ task.id }}>
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <input type="submit" value="Peru">
             </form>
             {% endif %}
@@ -43,16 +45,19 @@
 Lisää tehtävä:
 <form action="/new_task" method="POST">
     <input type="hidden" name="event_id" value={{ event_id }}>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="text" name="task" minlength="1" maxlength="50" required>
     <input type="submit" value="Lisää">
 </form>
 <br>
 <form action="/randomize_all" method="POST">
     <input type="hidden" name="event_id" value={{ event_id }}>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="submit" value="Arvo kaikki">
 </form>
 <form action="/randomize_unfilled" method="POST">
     <input type="hidden" name="event_id" value={{ event_id }}>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="submit" value="Arvo tyhjäksi jääneet">
 </form>
 {% else %}

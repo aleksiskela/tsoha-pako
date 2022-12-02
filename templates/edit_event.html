@@ -10,7 +10,7 @@
     <br>
     Tapahtuman kuvaus:
     <br>
-    <textarea name="description" cols="30" rows="10" maxlength="5000">{{ event.description }}</textarea>
+    <textarea name="description" cols="30" rows="10" maxlength="2000">{{ event.description }}</textarea>
     <br>
     Päivämäärä: <br>
     <input type="date" name="date" value={{ date }}>
@@ -19,8 +19,9 @@
     <input type="time" name="time" value="{{ time }}">
     <br>
     Paikka: <br>
-    <input type="text" name="location" value="{{ event.location|safe }}">
+    <input type="text" name="location" value="{{ event.location|safe }}" maxlength="100">
     <br><br>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="submit" value="Tallenna muutokset">
 </form>
 {% endblock %}

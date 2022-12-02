@@ -7,7 +7,7 @@
 {% if session.username in enrolments %}
 <form action="" method="POST">
     <input type="text" name="content" size="100" minlength="1" maxlength="100" autocomplete="off" required> <!-- tee niin että mukautuu selaimen leveyteen -->
-    <!-- <textarea name="content" id="" cols="60" rows="1"></textarea> -->
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="submit" value="Lähetä">
 </form>
 {% else %}
