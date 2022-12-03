@@ -21,6 +21,10 @@
 Kellonaika: {{ time }} <br>
 Paikka: {{ location }}</p>
 
+{% if private_key %}
+Kutsukoodi: {{private_key}}
+{% endif %}
+
 <h4>Osallistujat:</h4>
 <ul>
     {% for enrolled in enrolments %}

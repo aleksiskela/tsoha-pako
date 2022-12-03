@@ -38,9 +38,28 @@
         <input type="submit" value="Kirjaudu">
     </form>
     <a href="/register">Uusi käyttäjä</a>
-    {% endif %}
+{% endif %}
 <hr>
-<h3>Tapahtumat</h3>
+Yksityisen tapahtuman kutsukoodi:
+<form action="", method="POST">
+    <input type="text" name="private_key" maxlength="100">
+    <input type="submit" value="Hae">
+</form>
+{% if session.username %}
+<h3>Omat tapahtumat:</h3>
+{% if enrolled_events %}
+<ul>
+    {% for event in enrolled_events %}
+    <li>
+        <a href="/event/{{ event.id }}">{{ event.name }}</a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<b>Et ole osallistunut yhteenkään tapahtumaan</b>
+{% endif %}
+{% endif %}
+<h3>Julkiset tapahtumat</h3>
 <ul>
 {% for event in events %}
 <li>
@@ -48,6 +67,14 @@
 </li>
 {% endfor %}
 </ul>
+<!-- <h3>Yksityiset tapahtumat</h3>
+<ul>
+    {% for event in private_events %}
+    <li>
+        <a href="/event/{{ event.id }}">{{ event.name }}</a> <i>Created by {{ event.username }}</i>
+    </li>
+    {% endfor %}
+</ul> -->
 
 {% if session.username %}
 <p>

@@ -7,9 +7,23 @@ import messages
 import voting
 import tasks
 
-@app.route("/")
+@app.route("/", methods=["GET","POST"])
 def index():
-    return render_template("index.html", events=events.get_all_events())
+    if request.method == "POST":
+        private_key = request.form["private_key"]
+        event = events.get_private_event(private_key)
+        if event:
+            return redirect("/event/"+str(event.id))
+        return render_template("error.html", message="Ei löytynyt kutsukoodia")
+
+    try:
+        user_id = users.get_my_id()
+    except:
+        user_id = 0
+
+    return render_template("index.html", events=events.get_public_events(),
+                            private_events=events.get_private_events(),
+                            enrolled_events=events.get_my_events(user_id))
 
 
 @app.route("/event/<int:event_id>")
@@ -25,6 +39,7 @@ def show_event(event_id):
     creator_id = event.creator_id
     creator_username = users.get_username(creator_id)
     location = event.location
+    private_key = event.private_key
 
     if not location:
         location = "-"
@@ -48,7 +63,8 @@ def show_event(event_id):
 
     return render_template("event.html", name=name, description=description, event_id=event_id,
                             creator_username=creator_username, enrolments=enrolments, date=date,
-                            time=time, location=location, countdown=countdown)
+                            time=time, location=location, countdown=countdown,
+                            private_key=private_key)
 
 
 @app.route("/create_event", methods=["GET","POST"])
@@ -69,10 +85,24 @@ def create_event():
             timestamp = None
 
         location = request.form["location"]
+        private_key = None
+        # private = request.form.get("private_event")
+        # print("TESTI")
+        # print(private)
 
-        if len(name) > 100:
+        if request.form.get("private_event"):
+            private_key = request.form["private_key"]
+            if len(private_key) < 5:
+                private_key = events.generate_private_key()
+            elif len(private_key) > 16:
+                return render_template("error.html",
+                                    message="Kutsukoodi enintään 16 merkkiä")
+        # else:
+        #     private_key = None
+
+        if len(name) > 50:
             return render_template("error.html",
-                                    message="Tapahtuman nimessä saa olla korkeintaan 100 merkkiä")
+                                    message="Tapahtuman nimessä saa olla korkeintaan 50 merkkiä")
         if len(name.strip()) < 1:
             return render_template("error.html",
                                     message="Tapahtuman nimessä on oltava vähintään yksi merkki")
@@ -81,11 +111,11 @@ def create_event():
                                 message="Tapahtuman kuvauksessa saa olla korkeintaan 2000 merkkiä")
         if len(description) == 0:
             description = "Tapahtumalla ei ole kuvausta"
-        if len(location) > 100:
+        if len(location) > 50:
             return render_template("error.html",
-                                    message="Paikkatieto saa olla korkeintaan 100 merkkiä")
+                                    message="Paikkatieto saa olla korkeintaan 50 merkkiä")
 
-        events.create_event(name, description, creator, timestamp, location)
+        events.create_event(name, description, creator, timestamp, location, private_key)
 
     return redirect("/")
 
@@ -120,9 +150,9 @@ def edit_event(event_id):
 
         location = request.form["location"]
 
-        if len(name) > 100:
+        if len(name) > 50:
             return render_template("error.html",
-                                    message="Tapahtuman nimessä saa olla korkeintaan 100 merkkiä")
+                                    message="Tapahtuman nimessä saa olla korkeintaan 50 merkkiä")
         if len(name.strip()) < 1:
             return render_template("error.html",
                                     message="Tapahtuman nimessä on oltava vähintään yksi merkki")
@@ -131,9 +161,9 @@ def edit_event(event_id):
                                 message="Tapahtuman kuvauksessa saa olla korkeintaan 2000 merkkiä")
         if len(description) == 0:
             description = "Tapahtumalla ei ole kuvausta"
-        if len(location) > 100:
+        if len(location) > 50:
             return render_template("error.html",
-                                    message="Paikkatieto saa olla korkeintaan 100 merkkiä")
+                                    message="Paikkatieto saa olla korkeintaan 50 merkkiä")
 
         events.edit_event(event_id, name, description, timestamp, location)
 

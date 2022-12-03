@@ -1,14 +1,35 @@
+import secrets
 from db import db
 
-def get_all_events():
+def get_public_events():
     sql = db.session.execute("""SELECT e.id, e.name, u.username FROM events e
-                            LEFT JOIN users u ON u.id=e.creator_id WHERE visible=TRUE""")
+                            LEFT JOIN users u ON u.id=e.creator_id
+                            WHERE visible=TRUE AND private_key IS NULL""")
     events = sql.fetchall()
     return events
 
+def get_private_events():
+    sql = db.session.execute("""SELECT e.id, e.name, u.username FROM events e
+                            LEFT JOIN users u ON u.id=e.creator_id 
+                            WHERE visible=TRUE AND private_key IS NOT NULL""")
+    events = sql.fetchall()
+    return events
+
+def get_private_event(private_key):
+    sql = "SELECT id from events where private_key=:private_key"
+    event = db.session.execute(sql, {"private_key":private_key}).fetchone()
+    if event:
+        return get_event(event.id)
+
+def get_my_events(user_id):
+    sql = """SELECT ev.id, ev.name FROM events ev, enrolments en
+            WHERE ev.id=en.event_id AND en.user_id=:user_id"""
+    my_events = db.session.execute(sql, {"user_id":user_id}).fetchall()
+    return my_events
+
 def get_event(event_id):
     sql = """SELECT id, name, description, creator_id, datetime,
-            location FROM events WHERE events.id = :event_id"""
+            location, private_key FROM events WHERE events.id = :event_id"""
     event = db.session.execute(sql, {"event_id": event_id}).fetchone()
     return event
 
@@ -16,11 +37,12 @@ def get_event_name(event_id):
     sql = "SELECT name FROM events WHERE id=:event_id"
     return db.session.execute(sql, {"event_id":event_id}).fetchone()[0]
 
-def create_event(name, description, creator_id, datetime, location):
-    sql = """INSERT INTO events (name, description, creator_id, datetime, location)
-        VALUES (:name, :description, :creator_id, :datetime, :location)"""
+def create_event(name, description, creator_id, datetime, location, private_key):
+    sql = """INSERT INTO events (name, description, creator_id, datetime, location, private_key)
+        VALUES (:name, :description, :creator_id, :datetime, :location, :private_key)"""
     db.session.execute(sql, {"name":name, "description":description,
-                            "creator_id":creator_id, "datetime":datetime, "location":location})
+                            "creator_id":creator_id, "datetime":datetime,
+                            "location":location, "private_key":private_key})
     db.session.commit()
 
 def edit_event(event_id, name, description, datetime, location):
@@ -51,3 +73,7 @@ def delete_event(event_id):
     sql = "UPDATE events SET visible=FALSE WHERE id=:event_id"
     db.session.execute(sql, {"event_id":event_id})
     db.session.commit()
+
+def generate_private_key():
+    return secrets.token_hex(16)
+    

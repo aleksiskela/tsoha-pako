@@ -5,7 +5,7 @@
 <h3>Muokkaa tapahtumaa:</h3>
 <form action="" method="POST">
     Tapahtuman nimi:
-    <input type="text" name="name" value="{{ event.name|safe }}" minlength="1" maxlength="100" required>
+    <input type="text" name="name" value="{{ event.name|safe }}" minlength="1" maxlength="50" required>
     <br>
     <br>
     Tapahtuman kuvaus:
@@ -19,7 +19,7 @@
     <input type="time" name="time" value="{{ time }}">
     <br>
     Paikka: <br>
-    <input type="text" name="location" value="{{ event.location|safe }}" maxlength="100">
+    <input type="text" name="location" value="{{ event.location|safe }}" maxlength="50">
     <br><br>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="submit" value="Tallenna muutokset">
