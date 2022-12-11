@@ -19,9 +19,21 @@ def delete_vote(user_id, votable_id):
     db.session.execute(sql, {"user_id":user_id, "votable_id":votable_id})
     db.session.commit()
 
+def delete_event_votes(event_id, user_id):
+    sql = """DELETE FROM votes WHERE votable_id IN
+        (SELECT id FROM votables WHERE event_id=:event_id)
+        AND user_id=:user_id"""
+    db.session.execute(sql, {"event_id":event_id, "user_id":user_id})
+    db.session.commit()
+
 def add_votable(item, event_id):
     sql = "INSERT INTO votables (item, event_id) VALUES (:item, :event_id)"
     db.session.execute(sql, {"item":item, "event_id":event_id})
+    db.session.commit()
+
+def delete_votable(votable_id):
+    sql = "DELETE FROM votables WHERE id=:votable_id"
+    db.session.execute(sql, {"votable_id":votable_id})
     db.session.commit()
 
 def get_already_voted(user_id):

@@ -58,3 +58,7 @@ def get_username(user_id):
 def check_csrf():
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
+
+def delete_account(user_id):
+    sql = "UPDATE users SET password='' WHERE id=:user_id"
+    db.session.execute(sql, {"user_id":user_id})

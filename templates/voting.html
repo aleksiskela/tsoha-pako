@@ -38,6 +38,14 @@
             +
             {% endif %}
             {{ votable.sum }} / {{ votable.count }}</td>
+        {% if rights %}
+        <td><form action="/delete_votable" method="POST">
+            <input type="hidden" name="votable_id" value="{{votable.id}}">
+            <input type="hidden" name="event_id" value="{{event_id}}">
+            <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+            <input type="submit" value="Poista kohde">
+        </form></td>
+        {% endif %}
     </tr>
     {% endfor %}
 </table>

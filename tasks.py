@@ -91,3 +91,13 @@ def randomize_unfilled(event_id):
 
     for task in randomized:
         set_volunteer(task[1], task[0])
+
+def delete_task(task_id):
+    sql = "DELETE FROM tasks WHERE id=:task_id"
+    db.session.execute(sql, {"task_id":task_id})
+    db.session.commit()
+
+def withdraw_event_tasks(event_id, user_id):
+    sql = "UPDATE tasks SET volunteer=NULL WHERE event_id=:event_id AND volunteer=:user_id"
+    db.session.execute(sql, {"event_id":event_id, "user_id":user_id})
+    db.session.commit()

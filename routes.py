@@ -23,16 +23,16 @@ def index():
 
     return render_template("index.html", events=events.get_public_events(),
                             private_events=events.get_private_events(),
-                            enrolled_events=events.get_my_events(user_id))
+                            enrolled_events=events.get_enrolled_events(user_id),
+                            my_events = events.get_my_events(user_id))
 
 
 @app.route("/event/<int:event_id>")
 def show_event(event_id):
     event = events.get_event(event_id)
 
-    # enrolment_data = events.get_enrolments(event_id)
-    # enrolments = [user.username for user in enrolment_data]
     enrolments = events.get_enrolments(event_id)
+    enr_unames = [enrolled.username for enrolled in enrolments]
 
     name = event.name
     description = event.description
@@ -40,6 +40,12 @@ def show_event(event_id):
     creator_username = users.get_username(creator_id)
     location = event.location
     private_key = event.private_key
+
+    try:
+        rights = events.check_rights(event_id, users.get_my_id())
+    except KeyError:
+        rights = False
+
 
     if not location:
         location = "-"
@@ -64,7 +70,7 @@ def show_event(event_id):
     return render_template("event.html", name=name, description=description, event_id=event_id,
                             creator_username=creator_username, enrolments=enrolments, date=date,
                             time=time, location=location, countdown=countdown,
-                            private_key=private_key)
+                            private_key=private_key, rights=rights, enr_unames=enr_unames)
 
 
 @app.route("/create_event", methods=["GET","POST"])
@@ -194,8 +200,21 @@ def cancel_enrolment():
     user_id = users.get_my_id()
 
     events.cancel_enrolment(event_id, user_id)
+    voting.delete_event_votes(event_id, user_id)
+    tasks.withdraw_event_tasks(event_id, user_id)
 
     return redirect(f"/event/{event_id}")
+
+@app.route("/set_role", methods=["POST"])
+def set_role():
+    users.check_csrf()
+    event_id = request.form["event_id"]
+    username = request.form["username"]
+    role = request.form["role"]
+
+    events.set_role(event_id, username, role)
+
+    return redirect("/event/"+event_id)
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -231,9 +250,9 @@ def register():
             return render_template("error.html",
                                     message="Salasanat eivät täsmää")
 
-        if not 3 <= len(username) <= 20 or not 3 <= len(password) <= 30:
+        if not 1 <= len(username) <= 20 or not 3 <= len(password) <= 30:
             return render_template("error.html",
-                                message="""Käyttäjätunnuksessa oltava 3-20 merkkiä
+                                message="""Käyttäjätunnuksessa oltava 1-20 merkkiä
                                 ja salasanassa 3-30 merkkiä""")
 
         users.register(username, password)
@@ -252,18 +271,33 @@ def show_messages(event_id):
         content = request.form["content"]
         user_id = users.get_my_id()
 
-        if not 1 <= len(content) <= 100:
+        if not 1 <= len(content) <= 50:
             return render_template("error.html",
-                                    message="Viestissä oltava 1-100 merkkiä")
+                                    message="Viestissä oltava 1-50 merkkiä")
 
         messages.send_message(content, user_id, event_id)
 
     event_messages = messages.get_event_messages(event_id)
-    enrolments = events.get_enrolments(event_id)
+    enrolments = [e.username for e in events.get_enrolments(event_id)]
     name = events.get_event_name(event_id)
 
     return render_template("/messages.html", messages=event_messages,
                             enrolments=enrolments, event_id=event_id, name=name)
+
+@app.route("/delete_message", methods=["POST"])
+def delete_message():
+    users.check_csrf()
+    message_id = request.form["message_id"]
+    event_id = request.form["event_id"]
+    sender_uname = request.form["sender"]
+
+
+    if sender_uname == users.session["username"]:
+        messages.delete_message(message_id)
+    else:
+        return render_template("error.html", message="Ei lupaa poistaa muiden viestejä")
+
+    return redirect("/messages/"+event_id)
 
 @app.route("/voting/<int:event_id>", methods=["GET","POST"])
 def show_votes(event_id):
@@ -283,8 +317,13 @@ def show_votes(event_id):
 
 
     event_votables = voting.get_votables(event_id)
-    enrolments = events.get_enrolments(event_id)
+    enrolments = [e.username for e in events.get_enrolments(event_id)]
     name = events.get_event_name(event_id)
+
+    try:
+        rights = events.check_rights(event_id, users.get_my_id())
+    except KeyError:
+        rights = False
 
     try:
         already_voted = voting.get_already_voted(users.get_my_id())
@@ -294,7 +333,7 @@ def show_votes(event_id):
 
     return render_template("voting.html", votables=event_votables,
                         already_voted=already_voted, event_id=event_id,
-                        enrolments=enrolments, name=name)
+                        enrolments=enrolments, name=name, rights=rights)
 
 @app.route("/add_votable", methods=["POST"])
 def add_votable():
@@ -310,13 +349,26 @@ def add_votable():
 
     return redirect("/voting/"+event_id)
 
+@app.route("/delete_votable", methods=["POST"])
+def delete_votable():
+    users.check_csrf()
+    votable_id = request.form["votable_id"]
+    event_id = request.form["event_id"]
+    voting.delete_votable(votable_id)
+
+    return redirect("/voting/"+event_id)
+
 @app.route("/tasks/<int:event_id>")
 def show_tasks(event_id):
     event_tasks = tasks.get_event_tasks(event_id)
-    enrolments = events.get_enrolments(event_id)
+    enrolments = [e.username for e in events.get_enrolments(event_id)]
     name = events.get_event_name(event_id)
+    try:
+        rights = events.check_rights(event_id, users.get_my_id())
+    except KeyError:
+        rights = False
 
-    return render_template("tasks.html", event_tasks=event_tasks,
+    return render_template("tasks.html", event_tasks=event_tasks, rights=rights,
                             event_id=event_id, enrolments=enrolments, name=name)
 
 @app.route("/set_volunteer", methods=["POST"])
@@ -369,3 +421,13 @@ def randomize_unfilled():
     tasks.randomize_unfilled(event_id)
 
     return redirect("/tasks/" + event_id)
+
+@app.route("/delete_task", methods=["POST"])
+def delete_task():
+    users.check_csrf()
+    event_id = request.form["event_id"]
+    task_id = request.form["task_id"]
+
+    tasks.delete_task(task_id)
+
+    return redirect("/tasks/"+event_id)

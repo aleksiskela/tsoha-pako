@@ -2,7 +2,7 @@ import secrets
 from db import db
 
 def get_public_events():
-    sql = db.session.execute("""SELECT e.id, e.name, u.username FROM events e
+    sql = db.session.execute("""SELECT e.id, e.name, e.datetime, u.username FROM events e
                             LEFT JOIN users u ON u.id=e.creator_id
                             WHERE visible=TRUE AND private_key IS NULL""")
     events = sql.fetchall()
@@ -21,9 +21,16 @@ def get_private_event(private_key):
     if event:
         return get_event(event.id)
 
+def get_enrolled_events(user_id):
+    sql = """SELECT ev.id, ev.name, ev.datetime FROM events ev, enrolments en
+            WHERE ev.id=en.event_id AND en.user_id=:user_id AND ev.visible=TRUE
+            ORDER BY ev.datetime"""
+    enrolled_events = db.session.execute(sql, {"user_id":user_id}).fetchall()
+    return enrolled_events
+
 def get_my_events(user_id):
-    sql = """SELECT ev.id, ev.name FROM events ev, enrolments en
-            WHERE ev.id=en.event_id AND en.user_id=:user_id"""
+    sql = """SELECT id, name, datetime FROM events
+        WHERE creator_id=:user_id AND visible=TRUE ORDER BY datetime"""
     my_events = db.session.execute(sql, {"user_id":user_id}).fetchall()
     return my_events
 
@@ -57,17 +64,25 @@ def enrol(event_id, user_id, role):
     db.session.execute(sql, {"event_id":event_id, "user_id":user_id, "role":role})
     db.session.commit()
 
+def set_role(event_id, username, role):
+    sql = "SELECT id FROM users WHERE username=:username"
+    user = db.session.execute(sql, {"username":username}).fetchone()
+
+    sql = "UPDATE enrolments SET role=:role WHERE event_id=:event_id AND user_id=:user_id"
+    db.session.execute(sql, {"role":role, "event_id":event_id, "user_id":user.id})
+    db.session.commit()
+
 def cancel_enrolment(event_id, user_id):
     sql = "DELETE FROM enrolments WHERE event_id=:event_id AND user_id=:user_id"
     db.session.execute(sql, {"event_id":event_id, "user_id":user_id})
     db.session.commit()
 
 def get_enrolments(event_id):
-    sql = """SELECT DISTINCT u.username FROM users u, enrolments e
+    sql = """SELECT DISTINCT u.username, e.role FROM users u, enrolments e
             WHERE u.id=e.user_id AND e.event_id=:event_id"""
-    result = db.session.execute(sql, {"event_id":event_id}).fetchall()
-    enrolments = [user.username for user in result]
-    return enrolments
+    enr = db.session.execute(sql, {"event_id":event_id}).fetchall()
+    # enrolments = [user.username for user in result]
+    return enr
 
 def delete_event(event_id):
     sql = "UPDATE events SET visible=FALSE WHERE id=:event_id"
@@ -76,4 +91,14 @@ def delete_event(event_id):
 
 def generate_private_key():
     return secrets.token_hex(16)
+
+def check_rights(event_id, user_id):
+    sql = "SELECT 1 FROM enrolments WHERE event_id=:event_id AND user_id=:user_id AND role=2"
+    role = db.session.execute(sql, {"event_id":event_id, "user_id":user_id}).fetchone()
     
+    sql = "SELECT 1 FROM events WHERE id=:event_id AND creator_id=:user_id"
+    creator = db.session.execute(sql, {"event_id":event_id, "user_id":user_id}).fetchone()
+
+    if role or creator:
+        return True
+    return False

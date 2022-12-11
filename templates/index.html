@@ -46,27 +46,62 @@ Yksityisen tapahtuman kutsukoodi:
     <input type="submit" value="Hae">
 </form>
 {% if session.username %}
+{% if my_events %}
 <h3>Omat tapahtumat:</h3>
-{% if enrolled_events %}
-<ul>
-    {% for event in enrolled_events %}
-    <li>
-        <a href="/event/{{ event.id }}">{{ event.name }}</a>
-    </li>
+<table>
+    <th>Nimi</th><th>Päivämäärä</th>
+    {% for event in my_events %}
+    <tr>
+        <td><a href="/event/{{ event.id }}">{{ event.name }}</a></td>
+        <td>
+            {% if event.datetime %}
+            {{ event.datetime.strftime("%d.%m.%Y") }}
+            {% endif %}
+        </td>
+    </tr>
     {% endfor %}
-</ul>
+</table>
+{% endif %}
+<h3>Omat osallistumiset:</h3>
+{% if enrolled_events %}
+<table>
+    <tr>
+        <th>Nimi</th><th>Päivämäärä</th>
+    </tr>
+    {% for event in enrolled_events %}
+    <tr>
+        <td><a href="/event/{{ event.id }}">{{ event.name }}</a></td>
+        {% if event.datetime %}
+        <td>{{ event.datetime.strftime("%d.%m.%Y") }}</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>
 {% else %}
 <b>Et ole osallistunut yhteenkään tapahtumaan</b>
 {% endif %}
 {% endif %}
 <h3>Julkiset tapahtumat</h3>
-<ul>
-{% for event in events %}
-<li>
-<a href="/event/{{ event.id }}">{{ event.name }}</a> <i> Created by {{ event.username }} </i>
-</li>
-{% endfor %}
-</ul>
+<table>
+    <tr>
+        <th>Nimi</th><th>Päivämäärä</th><th>Järjestäjä</th>
+    </tr>
+    {% for event in events %}
+    <tr>
+        <td>
+            <a href="/event/{{ event.id }}">{{ event.name }}</a>
+        </td>
+        <td>
+            {% if event.datetime != None %}
+            {{ event.datetime.strftime("%d.%m.%Y") }}
+            {% endif %}
+        </td>
+        <td style="text-align: center">
+            {{ event.username }}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 <!-- <h3>Yksityiset tapahtumat</h3>
 <ul>
     {% for event in private_events %}

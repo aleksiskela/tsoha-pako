@@ -2,7 +2,7 @@
 {% block content %}
 {% include "event_layout.html" %}
 
-{% if session.username == creator_username %}
+{% if rights %}
 <form action="/delete_event" method="POST">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="hidden" name="event_id" value={{ event_id }}>
@@ -21,35 +21,65 @@
 Kellonaika: {{ time }} <br>
 Paikka: {{ location }}</p>
 
-{% if private_key %}
+{% if private_key and rights %}
 Kutsukoodi: {{private_key}}
 {% endif %}
 
 <h4>Osallistujat:</h4>
-<ul>
+<table>
+    <th>Osallistuja</th>
+    {% if rights %}
+    <th>Oikeudet</th>
+    <th>Muokkaa oikeuksia</th>
+    {% endif %}
     {% for enrolled in enrolments %}
-    <li>{{enrolled}}</li>
+    <tr>
+    <td>{{enrolled.username}}</td>
+    {% if rights %}
+    <td style="text-align: center;">
+        {% if enrolled.role == 0 %}
+        Estetty
+        {% elif enrolled.role == 1 %}
+        Vieras
+        {% elif enrolled.role == 2 %}
+        Järjestäjä
+        {% endif %}
+    </td>
+    <td> 
+        <form action="/set_role" method="POST">
+            <select name="role">
+                <!-- <option value="0">Estetty</option> -->
+                <option value="1" selected>Vieras</option>
+                <option value="2">Järjestäjä</option>
+            </select>
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <input type="hidden" name="event_id" value="{{ event_id }}">
+            <input type="hidden" name="username" value="{{ enrolled.username }}">
+            <input type="submit" value="Vahvista">
+        </form> 
+    </td>
+    {% endif %}
+    </tr> 
     {% endfor %}
-</ul>
+</table>
 
 {% if session.username %}
-
-{% if session.username in enrolments %}
-<form action="/leave_event" method="POST">
-    <input type="hidden" name="event_id" value={{ event_id }}>
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="submit" value="Peru osallistuminen">
-</form>
+    {% if session.username in enr_unames %}
+    <form action="/leave_event" method="POST">
+        <input type="hidden" name="event_id" value={{ event_id }}>
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input type="submit" value="Peru osallistuminen">
+    </form>
+    {% else %}
+    <form action="/enrol" method="POST">
+        <input type="hidden" name="event_id" value={{ event_id }}>
+        <input type="hidden" name="role" value="1">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input type="submit" value="Osallistu">
+    </form>
+    {% endif %}
 {% else %}
-<form action="/enrol" method="POST">
-    <input type="hidden" name="event_id" value={{ event_id }}>
-    <input type="hidden" name="role" value="1">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="submit" value="Osallistu">
-</form>
-{% endif %}
-{% else %}
-<h4>Kirjaudu sisään osallistuaksesi tapahtumaan</h4>
+    <h4>Kirjaudu sisään osallistuaksesi tapahtumaan</h4>
 {% endif %}
 <!-- <br>
 <a href="/messages/{{ id }}">Keskustelu</a>
@@ -58,4 +88,8 @@ Kutsukoodi: {{private_key}}
 <br>
 <a href="/tasks/{{ id }}">Tehtävät</a>
 <br> -->
+{% if rights %}
+<br>
+<b>Olet järjestäjä.</b> Voit muokata tapahtumaa, poistaa sen, poistaa äänestyskohteita ja tehtäviä, ja muokata osallistujien oikeuksia.
+{% endif %}
 {% endblock %}
