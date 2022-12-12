@@ -1,0 +1,54 @@
+body {
+    margin: auto;
+    max-width: 45em;
+    /* background-color: rgb(76, 168, 185); */
+    background-color: rgb(219, 229, 232);
+    /* background-color: rgb(69, 157, 172); */
+    /* background-color: rgba(3, 3, 120, 0.8); */
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
+    font-size:0.95em;
+    color:rgb(32, 39, 66);
+}
+
+.content {
+    padding: 2em 2em 2em 2em;
+}
+
+h1 {
+    color:rgb(135, 140, 43);
+    text-shadow: 0 0 1px black;
+}
+
+input[type="text"], textarea, input[type="password"],
+input[type="date"], input[type="time"] {
+    background-color: rgb(191, 208, 214);
+}
+
+input[type="submit"] {
+    background-color:rgb(75, 79, 11);
+    color:rgb(191, 208, 214);
+}
+
+a:link {
+    text-decoration: none;
+    color:rgb(82, 86, 17);
+    /* text-shadow: 0 0 black; */
+}
+
+a:visited {
+    text-decoration: none;
+    color:rgb(82, 86, 17)
+}
+
+a:hover {
+    color:crimson;
+}
+
+a:active {
+    color:brown;
+}
+
+hr {
+    border: 2px solid rgb(135, 140, 43);
+    border-bottom: 0.5px solid black;
+}

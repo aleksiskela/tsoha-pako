@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
+{% block title %}Etusivu{% endblock %}
 {% block content %}
 <h1>PAKO-app</h1>
-<p><i>Pois Arjesta, Keskity Olennaiseen</i><br>Sovellus yhteisölliseen tapahtumasuunnitteluun.</p>
+<p><i>Pois Arjesta, Keskity Olennaiseen</i></p><p>Yhteisöllinen tapahtumasuunnittelija.</p>
 {% if session.username %}
     Olet kirjautuneena sisään tunnuksella <b>{{session.username}}</b>
     <br> 
@@ -10,7 +11,7 @@
     {% else %}
     <table>
         <tr>
-            <td>Käyttäjätunnus:<br>Salasana:</td>
+            <td>Tunnus:<br>Salasana:</td>
             <td><form action="/login" method="POST">
                 <input type="text" name="username">
                 <br>
@@ -37,13 +38,13 @@ Yksityisen tapahtuman kutsukoodi:
 {% if my_events %}
 <h3>Omat tapahtumat:</h3>
 <table>
-    <th>Nimi</th><th>Päivämäärä</th><th>Osallistujia</th><th>Yksityinen</th>
+    <th>Nimi</th><th>Pvm</th><th>Osallistujia</th><th>Yksityinen</th>
     {% for event in my_events %}
     <tr>
         <td><a href="/event/{{ event.id }}">{{ event.name }}</a></td>
         <td>
             {% if event.datetime %}
-            {{ event.datetime.strftime("%d.%m.%Y") }}
+            {{ event.datetime.strftime("%d.%m.") }}
             {% endif %}
         </td>
         <td style="text-align: center;">{{ event.count }}</td>
@@ -55,19 +56,20 @@ Yksityisen tapahtuman kutsukoodi:
     </tr>
     {% endfor %}
 </table>
+<hr>
 {% endif %}
 <h3>Omat osallistumiset:</h3>
 {% if enrolled_events %}
 <table>
     <tr>
-        <th>Nimi</th><th>Päivämäärä</th><th>Järjestäjä</th><th>Osallistujia</th>
+        <th>Nimi</th><th>Pvm</th><th>Järjestäjä</th><th>Osallistujia</th>
     </tr>
     {% for event in enrolled_events %}
     <tr>
         <td><a href="/event/{{ event.id }}">{{ event.name }}</a></td>
         <td>
         {% if event.datetime %}
-            {{ event.datetime.strftime("%d.%m.%Y") }}
+            {{ event.datetime.strftime("%d.%m.") }}
         {% endif %}
         </td>
         <td>{{ event.username }}</td>
@@ -78,11 +80,12 @@ Yksityisen tapahtuman kutsukoodi:
 {% else %}
 <b>Et ole osallistunut yhteenkään tapahtumaan</b>
 {% endif %}
+<hr>
 {% endif %}
 <h3>Julkiset tapahtumat</h3>
 <table>
     <tr>
-        <th>Nimi</th><th>Päivämäärä</th><th>Järjestäjä</th><th>Osallistujia</th>
+        <th>Nimi</th><th>Pvm</th><th>Järjestäjä</th><th>Osallistujia</th>
     </tr>
     {% for event in events %}
     <tr>
@@ -91,7 +94,7 @@ Yksityisen tapahtuman kutsukoodi:
         </td>
         <td>
             {% if event.datetime != None %}
-            {{ event.datetime.strftime("%d.%m.%Y") }}
+            {{ event.datetime.strftime("%d.%m.") }}
             {% endif %}
         </td>
         <td style="text-align: center;">
@@ -103,6 +106,7 @@ Yksityisen tapahtuman kutsukoodi:
     </tr>
     {% endfor %}
 </table>
+<hr>
 <!-- <h3>Yksityiset tapahtumat</h3>
 <ul>
     {% for event in private_events %}
