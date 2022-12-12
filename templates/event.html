@@ -27,10 +27,10 @@ Kutsukoodi: {{private_key}}
 
 <h4>Osallistujat:</h4>
 <table>
-    <th>Osallistuja</th>
+    <th>Nimi</th>
     {% if rights %}
-    <th>Oikeudet</th>
-    <th>Muokkaa oikeuksia</th>
+    <th>Rooli</th>
+    <th>Muokkaa roolia</th>
     {% endif %}
     {% for enrolled in enrolments %}
     <tr>
@@ -88,8 +88,14 @@ Kutsukoodi: {{private_key}}
 <br>
 <a href="/tasks/{{ id }}">Tehtävät</a>
 <br> -->
-{% if rights %}
 <br>
-<b>Olet järjestäjä.</b> Voit muokata tapahtumaa, poistaa sen, poistaa äänestyskohteita ja tehtäviä, ja muokata osallistujien oikeuksia.
+{% if rights %}
+<b>Olet järjestäjä.</b> Voit muokata tapahtumaa, poistaa sen, poistaa äänestyskohteita ja tehtäviä, ja muokata osallistujien roolia.
+{% else %}
+{% if session.username in enr_unames %}
+<b>Olet vieras.</b> Voit osallistua keskusteluun, äänestyksiin ja tehtävänjakoon.
+{% else %}
+<b>Et ole osallistunut.</b> Osallistumalla pääset vaikuttamaan.
+{% endif %}
 {% endif %}
 {% endblock %}

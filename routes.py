@@ -431,3 +431,8 @@ def delete_task():
     tasks.delete_task(task_id)
 
     return redirect("/tasks/"+event_id)
+
+@app.route("/passed_events")
+def show_passed_events():
+    passed_events = events.get_passed_events()
+    return render_template("passed_events.html", passed_events=passed_events)

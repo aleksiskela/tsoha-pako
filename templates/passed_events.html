@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+<h3>Menneet tapahtumat</h3>
+<ul>
+    {% for event in passed_events %}
+    <li>
+        <a href="/event/{{ event.id }}">{{ event.name }}</a>
+        {% if event.datetime %}
+        - {{ event.datetime.strftime("%d.%m.%Y") }}
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
