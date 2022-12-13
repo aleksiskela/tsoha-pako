@@ -5,7 +5,7 @@
 <h4>Tehtävät</h4>
 <table>
     <tr>
-        <th>Tehtävä</th>
+        <th style="text-align: left;">Tehtävä</th>
         <th>Tekijä</th>
         {% if session.username %}
         <th>Nakki</th>
@@ -14,12 +14,12 @@
     {% for task in event_tasks %}
     <tr>
         <td>{{ task.task_name }}</td>
-        <td>
+        <td style="text-align: center;">
             {% if task.username %}
             {{ task.username }}
             {% endif %}
         </td>
-        <td>
+        <td style="text-align: center;">
             {% if session.username in enrolments %}
             {% if not task.username %}
             <form action="/set_volunteer" method="POST">

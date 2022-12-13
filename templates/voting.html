@@ -7,17 +7,17 @@
 
 <table>
     <tr>
-        <th>Kohde</th>
+        <th style="text-align: left">Kohde</th>
         {% if session.username in enrolments%}
         <th>Ääni</th>
         {% endif %}
-        <th>Äänestystilanne / Annettuja ääniä</th>
+        <th>Tilanne / Ääniä</th>
     </tr>
     {% for votable in votables %}
     <tr>
         <td>{{ votable.item }}</td>
         {% if session.username in enrolments%}
-        <td>
+        <td style="text-align: center;">
             {% if votable.id in already_voted %}
             <form action="" method="POST">
                 <input type="hidden" name="votable_id" value={{ votable.id }}>

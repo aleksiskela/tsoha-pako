@@ -7,9 +7,15 @@
     <title>PAKO-app - {% block title %}{% endblock %}</title>
 </head>
 <body>
+    {% if i %}
+    <div class="i">
+    {% endif %}
     <div class="content">
-    <a href="/">Home</a>
-    {% block content %}{% endblock %}
+        <a href="/" id="home">Home</a>
+        {% block content %}{% endblock %}
     </div>
+    {% if i %}
+    </div>
+    {% endif %}
 </body>
 </html>

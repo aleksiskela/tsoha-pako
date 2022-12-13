@@ -24,7 +24,7 @@ def index():
     return render_template("index.html", events=events.get_public_events(),
                             private_events=events.get_private_events(),
                             enrolled_events=events.get_enrolled_events(user_id),
-                            my_events = events.get_my_events(user_id))
+                            my_events = events.get_my_events(user_id), i=True)
 
 
 @app.route("/event/<int:event_id>")
