@@ -9,18 +9,10 @@ import tasks
 
 @app.route("/")
 def index():
-    # if request.method == "POST":
-    #     private_key = request.form["private_key"]
-    #     return redirect("/")
-
-        # event = events.get_private_event(private_key)
-        # if event:
-        #     return redirect("/event/"+str(event.id))
-        # return render_template("error.html", message="Ei löytynyt kutsukoodia")
 
     try:
         user_id = users.get_my_id()
-    except:
+    except KeyError:
         user_id = 0
 
     return render_template("index.html", events=events.get_public_events(),
@@ -70,7 +62,6 @@ def show_event(event_id):
         time = timestamp.strftime("%H:%M")
         countdown = timestamp.date()-datetime.today().date()
         countdown = countdown.days
-
 
     except:
         pass
@@ -437,8 +428,8 @@ def show_passed_events():
         user_id = users.get_my_id()
     except:
         user_id = None
-        
+
     passed_private_events = events.get_passed_private_events(user_id)
 
     return render_template("passed_events.html", passed_events=passed_events,
-                            passed_private_events=passed_private_events)
+                            passed_private_events=passed_private_events, i=True)

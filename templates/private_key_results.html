@@ -5,16 +5,16 @@
 <h1>PAKO Planner</h1>
 <hr>
 {% if matches %}
-Kutsukoodilla löytyi seuraavat tapahtumat:
-<ul>
-    {% for event in matches %}
-    <li>
-        <a href="/event/{{ event.id }}">{{event.name}}</a> ({{event.datetime.strftime("%d.%m.%Y")}}), järjestäjä {{event.username}}
-    </li>
-    {% endfor %}
-</ul>
+    Kutsukoodilla löytyi seuraavat tapahtumat:
+    <ul>
+        {% for event in matches %}
+        <li>
+            <a href="/event/{{ event.id }}">{{event.name}}</a> ({{event.datetime.strftime("%d.%m.%Y")}}), järjestäjä {{event.username}}
+        </li>
+        {% endfor %}
+    </ul>
 {% else %}
-Kutsukoodilla ei löytynyt tapahtumia
+    Kutsukoodilla ei löytynyt tapahtumia
 {% endif %}
 
 {% endblock %}

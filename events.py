@@ -2,20 +2,20 @@ import secrets
 from db import db
 
 def get_public_events():
-    sql = db.session.execute("""SELECT e.id, e.name, e.datetime, u.username,
-                            (SELECT COUNT(event_id) FROM enrolments WHERE event_id=e.id) FROM events e
-                            LEFT JOIN users u ON u.id=e.creator_id
-                            WHERE visible=TRUE AND private_key IS NULL
-                            AND (NOT e.datetime<NOW() OR e.datetime ISNULL) ORDER BY e.datetime""")
+    sql = """SELECT e.id, e.name, e.datetime, u.username,
+            (SELECT COUNT(event_id) FROM enrolments WHERE event_id=e.id) FROM events e
+            LEFT JOIN users u ON u.id=e.creator_id
+            WHERE visible=TRUE AND private_key IS NULL
+            AND (NOT e.datetime<NOW() OR e.datetime ISNULL) ORDER BY e.datetime"""
 
-    events = sql.fetchall()
+    events = db.session.execute(sql).fetchall()
     return events
 
 def get_private_events(private_key):
     sql = """SELECT e.id, e.name, e.datetime, u.username FROM events e
             LEFT JOIN users u ON u.id=e.creator_id 
             WHERE visible=TRUE AND private_key=:private_key"""
-    
+
     matches = db.session.execute(sql, {"private_key":private_key}).fetchall()
     return matches
 
@@ -28,17 +28,18 @@ def get_passed_events():
     return db.session.execute(sql).fetchall()
 
 def get_passed_private_events(user_id):
-    sql = """SELECT ev.id, ev.name, ev.datetime FROM events ev LEFT JOIN enrolments en 
+    sql = """SELECT DISTINCT ev.id, ev.name, ev.datetime FROM events ev LEFT JOIN enrolments en
             ON ev.id=en.event_id WHERE (ev.creator_id=:user_id OR en.user_id=:user_id)
-            AND ev.private_key IS NOT NULL AND ev.datetime<NOW() ORDER BY ev.datetime"""
-    
+            AND ev.private_key IS NOT NULL AND ev.datetime<NOW() AND visible=TRUE 
+            ORDER BY ev.datetime"""
+
     return db.session.execute(sql, {"user_id":user_id}).fetchall()
 
 def get_private_event(private_key):
     sql = "SELECT id from events where private_key=:private_key"
     event = db.session.execute(sql, {"private_key":private_key}).fetchone()
-    if event:
-        return get_event(event.id)
+    
+    return get_event(event.id)
 
 def get_enrolled_events(user_id):
     sql = """SELECT ev.id, ev.name, ev.datetime,
