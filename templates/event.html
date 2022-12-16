@@ -4,17 +4,13 @@
 {% include "event_layout.html" %}
 
 {% if rights %}
-<form action="/delete_event" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="hidden" name="event_id" value={{ event_id }}>
-    <input type="submit" value="Poista tapahtuma">
-</form>
-<br>
-<a href="/edit_event/{{ event_id }}">Muokkaa tapahtumaa</a>
-<!-- <form action="/edit_event/{{ event_id}}" method="POST">
-    <input type="hidden" name="event_id" value={{ event_id }}>
-    <input type="submit" value="Muokkaa tapahtumaa">
-</form> -->
+    <form action="/delete_event" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input type="hidden" name="event_id" value={{ event_id }}>
+        <input type="submit" value="Poista tapahtuma">
+    </form>
+    <br>
+    <a href="/edit_event/{{ event_id }}">Muokkaa tapahtumaa</a>
 {% endif %}
 <p>{{ description }}</p>
 <p><b>TJ: {{ countdown }}</b></p>
@@ -23,55 +19,55 @@ Kellonaika: {{ time }} <br>
 Paikka: {{ location }}</p>
 
 {% if private_key and rights %}
-Kutsukoodi: {{private_key}}
+    Kutsukoodi: {{private_key}}
 {% endif %}
 
 <h4>Osallistujat:</h4>
 <table>
     <th style="text-align: left;">Nimi</th>
     {% if rights %}
-    <th>Rooli</th>
-    <th>Muokkaa roolia</th>
+        <th>Rooli</th>
+        <th>Muokkaa roolia</th>
     {% endif %}
     {% for enrolled in enrolments %}
-    <tr>
-    <td>{{enrolled.username}}</td>
-    {% if rights %}
-    <td style="text-align: center;">
-        {% if enrolled.role == 0 %}
-        Estetty
-        {% elif enrolled.role == 1 %}
-        Vieras
-        {% elif enrolled.role == 2 %}
-        Järjestäjä
-        {% endif %}
-    </td>
-    <td> 
-        <form action="/set_role" method="POST">
-            <select name="role">
-                <!-- <option value="0">Estetty</option> -->
-                <option value="1" selected>Vieras</option>
-                <option value="2">Järjestäjä</option>
-            </select>
-            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-            <input type="hidden" name="event_id" value="{{ event_id }}">
-            <input type="hidden" name="username" value="{{ enrolled.username }}">
-            <input type="submit" value="Vahvista">
-        </form> 
-    </td>
-    {% endif %}
-    </tr> 
+        <tr>
+            <td>{{enrolled.username}}</td>
+            {% if rights %}
+                <td style="text-align: center;">
+                    {% if enrolled.role == 0 %}
+                        Estetty
+                    {% elif enrolled.role == 1 %}
+                        Vieras
+                    {% elif enrolled.role == 2 %}
+                        Järjestäjä
+                    {% endif %}
+                </td>
+                <td> 
+                    <form action="/set_role" method="POST">
+                        <select name="role">
+                            <!-- <option value="0">Estetty</option> -->
+                            <option value="1" selected>Vieras</option>
+                            <option value="2">Järjestäjä</option>
+                        </select>
+                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                        <input type="hidden" name="event_id" value="{{ event_id }}">
+                        <input type="hidden" name="username" value="{{ enrolled.username }}">
+                        <input type="submit" value="Vahvista">
+                    </form> 
+                </td>
+            {% endif %}
+        </tr> 
     {% endfor %}
 </table>
 
 {% if session.username %}
     {% if session.username in enr_unames %}
-    <form action="/leave_event" method="POST">
-        <input type="hidden" name="event_id" value={{ event_id }}>
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        <input type="submit" value="Peru osallistuminen">
-    </form>
-    {% else %}
+        <form action="/leave_event" method="POST">
+            <input type="hidden" name="event_id" value={{ event_id }}>
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <input type="submit" value="Peru osallistuminen">
+        </form>
+        {% else %}
     <form action="/enrol" method="POST">
         <input type="hidden" name="event_id" value={{ event_id }}>
         <input type="hidden" name="role" value="1">
@@ -82,21 +78,17 @@ Kutsukoodi: {{private_key}}
 {% else %}
     <h4>Kirjaudu sisään osallistuaksesi tapahtumaan</h4>
 {% endif %}
-<!-- <br>
-<a href="/messages/{{ id }}">Keskustelu</a>
+
 <br>
-<a href="/voting/{{ id }}">Äänestys</a>
-<br>
-<a href="/tasks/{{ id }}">Tehtävät</a>
-<br> -->
-<br>
+
 {% if rights %}
-<b>Olet järjestäjä.</b> Voit muokata tapahtumaa, poistaa sen, poistaa äänestyskohteita ja tehtäviä, ja muokata osallistujien roolia.
+    <b>Olet järjestäjä.</b> Voit muokata tapahtumaa, poistaa sen, poistaa äänestyskohteita ja tehtäviä, ja muokata osallistujien roolia.
 {% else %}
-{% if session.username in enr_unames %}
-<b>Olet vieras.</b> Voit osallistua keskusteluun, äänestyksiin ja tehtävänjakoon.
-{% else %}
-<b>Et ole osallistunut.</b> Osallistumalla pääset vaikuttamaan.
+    {% if session.username in enr_unames %}
+        <b>Olet vieras.</b> Voit osallistua keskusteluun, äänestyksiin ja tehtävänjakoon.
+    {% else %}
+        <b>Et ole osallistunut.</b> Osallistumalla pääset vaikuttamaan.
+    {% endif %}
 {% endif %}
-{% endif %}
+
 {% endblock %}

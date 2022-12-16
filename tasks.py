@@ -101,3 +101,4 @@ def withdraw_event_tasks(event_id, user_id):
     sql = "UPDATE tasks SET volunteer=NULL WHERE event_id=:event_id AND volunteer=:user_id"
     db.session.execute(sql, {"event_id":event_id, "user_id":user_id})
     db.session.commit()
+    

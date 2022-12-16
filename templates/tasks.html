@@ -2,51 +2,52 @@
 {% block title %}{{ name }}{% endblock %}
 {% block content %}
 {% include "event_layout.html" %}
+
 <h4>Tehtävät</h4>
 <table>
     <tr>
         <th style="text-align: left;">Tehtävä</th>
         <th>Tekijä</th>
         {% if session.username %}
-        <th>Nakki</th>
+            <th>Nakki</th>
         {% endif %}
     </tr>
     {% for task in event_tasks %}
-    <tr>
-        <td>{{ task.task_name }}</td>
-        <td style="text-align: center;">
-            {% if task.username %}
-            {{ task.username }}
+        <tr>
+            <td>{{ task.task_name }}</td>
+            <td style="text-align: center;">
+                {% if task.username %}
+                    {{ task.username }}
+                {% endif %}
+            </td>
+            <td style="text-align: center;">
+                {% if session.username in enrolments %}
+                    {% if not task.username %}
+                        <form action="/set_volunteer" method="POST">
+                            <input type="hidden" name="task_id" value={{ task.id }}>
+                            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                            <input type="submit" value="Napsauta">
+                        </form>
+                    {% elif task.username == session.username %}
+                        <form action="/withdraw" method="POST">
+                            <input type="hidden" name="task_id" value={{ task.id }}>
+                            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                            <input type="submit" value="Peru">
+                        </form>
+                    {% endif %}
+                {% endif %}
+            </td>
+            {% if rights %}
+                <td>
+                    <form action="/delete_task" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                        <input type="hidden" name="task_id" value="{{ task.id }}">
+                        <input type="hidden" name="event_id" value="{{ event_id }}">
+                        <input type="submit" value="Poista tehtävä">
+                    </form>
+                </td>
             {% endif %}
-        </td>
-        <td style="text-align: center;">
-            {% if session.username in enrolments %}
-            {% if not task.username %}
-            <form action="/set_volunteer" method="POST">
-                <input type="hidden" name="task_id" value={{ task.id }}>
-                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                <input type="submit" value="Napsauta">
-            </form>
-            {% elif task.username == session.username %}
-            <form action="/withdraw" method="POST">
-                <input type="hidden" name="task_id" value={{ task.id }}>
-                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                <input type="submit" value="Peru">
-            </form>
-            {% endif %}
-            {% endif %}
-        </td>
-        {% if rights %}
-        <td>
-            <form action="/delete_task" method="POST">
-                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                <input type="hidden" name="task_id" value="{{ task.id }}">
-                <input type="hidden" name="event_id" value="{{ event_id }}">
-                <input type="submit" value="Poista tehtävä">
-            </form>
-        </td>
-        {% endif %}
-    </tr>
+        </tr>
     {% endfor %}
 </table>
 

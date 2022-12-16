@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block title %}Etusivu{% endblock %}
 {% block content %}
+
 <h1>PAKO Planner</h1>
 <p><i>Pois Arjesta, Keskity Olennaiseen</i></p><p>Yhteisöllinen tapahtumasuunnittelija.</p>
 {% if session.username %}
@@ -8,126 +9,107 @@
     <br> 
     <a href="/logout">Kirjaudu ulos</a>
 
-    {% else %}
+{% else %}
     <form action="/login" method="POST">
-        <label for="username" style="margin-right: 11px;">Tunnus:</label>
+        <label for="username" style="margin-right: 11.5px;">Tunnus:</label>
         <input type="text" name="username"><br>
         <label for="password" style="width: auto;">Salasana:</label>
         <input type="password" name="password">
         <input type="submit" value="Kirjaudu">
     </form>
-            <!-- <td><form id="login"><input type="submit" value="Kirjaudu"></form></td> -->
-        <!-- </tr>
-    </table> -->
-    <!-- <table style="width: 100%">
-        <tr>
-            <td style="width:4.1em">Tunnus:<br>Salasana:</td>
-            <td style="text-align: left; width: 10em"><form action="/login" id="login" method="POST">
-                <input type="text" name="username">
-                <br>
-                <input type="password" name="password">
-                <input type="submit" value="Kirjaudu" id="login">
-            </form></td>
-            <!-- <td><form id="login"><input type="submit" value="Kirjaudu"></form></td> -->
-        <!-- </tr>
-    </table> -->
+
     <a href="/register">Uusi käyttäjä</a>
 {% endif %}
+
 <hr>
 Yksityisen tapahtuman kutsukoodi:
-<form action="", method="POST">
-    <input type="text" name="private_key" maxlength="100">
+<form action="/private_key_results" method="GET">
+    <input type="text" name="query" maxlength="100">
     <input type="submit" value="Hae">
 </form>
 {% if session.username %}
-<p>
-    <a href="/create_event">Luo uusi tapahtuma</a>
-</p>
+    <p><a href="/create_event">Luo uusi tapahtuma</a></p>
 {% endif %}
 
 {% if session.username %}
-{% if my_events %}
-<h3>Omat tapahtumat:</h3>
-<table>
-    <th style="width: 50%; text-align: left;">Nimi</th><th>&#128197;</th><th>&#128101;</th><th>&#128273;</th>
-    {% for event in my_events %}
-    <tr>
-        <td><a href="/event/{{ event.id }}">{{ event.name }}</a></td>
-        <td style="text-align: center;">
-            {% if event.datetime %}
-            {{ event.datetime.strftime("%d.%m.") }}
-            {% endif %}
-        </td>
-        <td style="text-align: center;">{{ event.count }}</td>
-        <td style="text-align: center;">
-            {% if event.private_key %}
-            X
-            {% endif %}
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-<hr>
+    {% if my_events %}
+        <h3>Omat tapahtumat:</h3>
+        <table>
+            <th style="width: 50%; text-align: left;">Nimi</th><th>&#128197;</th><th>&#128101;</th><th>&#128273;</th>
+            {% for event in my_events %}
+                <tr>
+                    <td><a href="/event/{{ event.id }}">{{ event.name }}</a></td>
+                    <td style="text-align: center;">
+                        {% if event.datetime %}
+                            {{ event.datetime.strftime("%d.%m.") }}
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center;">{{ event.count }}</td>
+                    <td style="text-align: center;">
+                        {% if event.private_key %}
+                            X
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    <hr>
+    {% endif %}
+
+    <h3>Omat osallistumiset:</h3>
+
+    {% if enrolled_events %}
+        <table>
+            <tr>
+                <th style="width: 50%; text-align: left;">Nimi</th><th>&#128197;</th><th>&#9875;</th><th>&#128101;</th>
+            </tr>
+            {% for event in enrolled_events %}
+                <tr>
+                    <td><a href="/event/{{ event.id }}">{{ event.name }}</a></td>
+                    <td style="text-align: center;">
+                    {% if event.datetime %}
+                        {{ event.datetime.strftime("%d.%m.") }}
+                    {% endif %}
+                    </td>
+                    <td style="text-align: center;">{{ event.username }}</td>
+                    <td style="text-align: center;">{{ event.count }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <b>Et ole osallistunut yhteenkään tapahtumaan</b>
+    {% endif %}
+    <hr>
 {% endif %}
-<h3>Omat osallistumiset:</h3>
-{% if enrolled_events %}
-<table>
-    <tr>
-        <th style="width: 50%; text-align: left;">Nimi</th><th>&#128197;</th><th>&#9875;</th><th>&#128101;</th>
-    </tr>
-    {% for event in enrolled_events %}
-    <tr>
-        <td><a href="/event/{{ event.id }}">{{ event.name }}</a></td>
-        <td style="text-align: center;">
-        {% if event.datetime %}
-            {{ event.datetime.strftime("%d.%m.") }}
-        {% endif %}
-        </td>
-        <td style="text-align: center;">{{ event.username }}</td>
-        <td style="text-align: center;">{{ event.count }}</td>
-    </tr>
-    {% endfor %}
-</table>
-{% else %}
-<b>Et ole osallistunut yhteenkään tapahtumaan</b>
-{% endif %}
-<hr>
-{% endif %}
+
 <h3>Julkiset tapahtumat</h3>
 <table>
     <tr>
         <th style="width: 50%; text-align: left;">Nimi</th><th>&#128197;</th><th>&#9875;</th><th>&#128101;</th>
     </tr>
     {% for event in events %}
-    <tr>
-        <td>
-            <a href="/event/{{ event.id }}">{{ event.name }}</a>
-        </td>
-        <td style="text-align: center;">
-            {% if event.datetime != None %}
-            {{ event.datetime.strftime("%d.%m.") }}
-            {% endif %}
-        </td>
-        <td style="text-align: center;">
-            {{ event.username }}
-        </td>
-        <td style="text-align: center;">
-            {{ event.count }}
-        </td>
-    </tr>
+        <tr>
+            <td>
+                <a href="/event/{{ event.id }}">{{ event.name }}</a>
+            </td>
+            <td style="text-align: center;">
+                {% if event.datetime != None %}
+                    {{ event.datetime.strftime("%d.%m.") }}
+                {% endif %}
+            </td>
+            <td style="text-align: center;">
+                {{ event.username }}
+            </td>
+            <td style="text-align: center;">
+                {{ event.count }}
+            </td>
+        </tr>
     {% endfor %}
 </table>
 <hr>
-<!-- <h3>Yksityiset tapahtumat</h3>
-<ul>
-    {% for event in private_events %}
-    <li>
-        <a href="/event/{{ event.id }}">{{ event.name }}</a> <i>Created by {{ event.username }}</i>
-    </li>
-    {% endfor %}
-</ul> -->
 
 <br>
+
 <a href="/passed_events">Näytä menneet tapahtumat</a>
 
 {% endblock %}

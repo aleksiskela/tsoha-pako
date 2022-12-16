@@ -21,14 +21,12 @@ body {
 
 .i h1 {
     padding-top: 33%;
+    /* font-size: 6em;
+    text-shadow: 0 0 4px black; */
 }
 
 .content {
     padding: 2em 1em 2em 1em;
-    /* background-color: #f4dbcc; */
-    /* background-image: url("pako-sign3.png");
-    background-repeat: no-repeat;
-    background-size:contain; */
 }
 
 
@@ -44,7 +42,9 @@ input[type="date"], input[type="time"] {
 
 input[type="submit"] {
     background-color:rgb(75, 79, 11);
-    color:rgb(191, 208, 214);
+    /* color:rgb(191, 208, 214); */
+    color:rgb(249, 252, 195);
+    
 }
 
 a:link {

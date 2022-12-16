@@ -11,19 +11,28 @@ def get_public_events():
     events = sql.fetchall()
     return events
 
-def get_private_events():
-    sql = db.session.execute("""SELECT e.id, e.name, u.username FROM events e
-                            LEFT JOIN users u ON u.id=e.creator_id 
-                            WHERE visible=TRUE AND private_key IS NOT NULL""")
-    events = sql.fetchall()
-    return events
+def get_private_events(private_key):
+    sql = """SELECT e.id, e.name, e.datetime, u.username FROM events e
+            LEFT JOIN users u ON u.id=e.creator_id 
+            WHERE visible=TRUE AND private_key=:private_key"""
+    
+    matches = db.session.execute(sql, {"private_key":private_key}).fetchall()
+    return matches
 
 def get_passed_events():
     sql = """SELECT e.id, e.name, e.datetime, u.username FROM events e
             LEFT JOIN users u ON u.id=e.creator_id
-            WHERE visible=TRUE AND datetime<NOW()"""
+            WHERE visible=TRUE AND datetime<NOW() AND e.private_key IS NULL
+            ORDER BY e.datetime"""
 
     return db.session.execute(sql).fetchall()
+
+def get_passed_private_events(user_id):
+    sql = """SELECT ev.id, ev.name, ev.datetime FROM events ev LEFT JOIN enrolments en 
+            ON ev.id=en.event_id WHERE (ev.creator_id=:user_id OR en.user_id=:user_id)
+            AND ev.private_key IS NOT NULL AND ev.datetime<NOW() ORDER BY ev.datetime"""
+    
+    return db.session.execute(sql, {"user_id":user_id}).fetchall()
 
 def get_private_event(private_key):
     sql = "SELECT id from events where private_key=:private_key"
@@ -32,7 +41,8 @@ def get_private_event(private_key):
         return get_event(event.id)
 
 def get_enrolled_events(user_id):
-    sql = """SELECT ev.id, ev.name, ev.datetime, (SELECT username FROM users WHERE id=ev.creator_id),
+    sql = """SELECT ev.id, ev.name, ev.datetime,
+            (SELECT username FROM users WHERE id=ev.creator_id),
             (SELECT COUNT(event_id) FROM enrolments WHERE event_id=ev.id) FROM events ev, enrolments en
             WHERE ev.id=en.event_id AND en.user_id=:user_id AND ev.visible=TRUE
             AND (NOT ev.datetime<NOW() OR ev.datetime ISNULL) ORDER BY ev.datetime"""
@@ -94,7 +104,6 @@ def get_enrolments(event_id):
     sql = """SELECT DISTINCT u.username, e.role FROM users u, enrolments e
             WHERE u.id=e.user_id AND e.event_id=:event_id"""
     enr = db.session.execute(sql, {"event_id":event_id}).fetchall()
-    # enrolments = [user.username for user in result]
     return enr
 
 def delete_event(event_id):
@@ -108,7 +117,7 @@ def generate_private_key():
 def check_rights(event_id, user_id):
     sql = "SELECT 1 FROM enrolments WHERE event_id=:event_id AND user_id=:user_id AND role=2"
     role = db.session.execute(sql, {"event_id":event_id, "user_id":user_id}).fetchone()
-    
+
     sql = "SELECT 1 FROM events WHERE id=:event_id AND creator_id=:user_id"
     creator = db.session.execute(sql, {"event_id":event_id, "user_id":user_id}).fetchone()
 

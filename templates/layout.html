@@ -8,14 +8,14 @@
 </head>
 <body>
     {% if i %}
-    <div class="i">
+        <div class="i">
     {% endif %}
     <div class="content">
         <a href="/" id="home">Home</a>
         {% block content %}{% endblock %}
     </div>
     {% if i %}
-    </div>
+        </div>
     {% endif %}
 </body>
 </html>

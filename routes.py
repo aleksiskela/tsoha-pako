@@ -7,14 +7,16 @@ import messages
 import voting
 import tasks
 
-@app.route("/", methods=["GET","POST"])
+@app.route("/")
 def index():
-    if request.method == "POST":
-        private_key = request.form["private_key"]
-        event = events.get_private_event(private_key)
-        if event:
-            return redirect("/event/"+str(event.id))
-        return render_template("error.html", message="Ei löytynyt kutsukoodia")
+    # if request.method == "POST":
+    #     private_key = request.form["private_key"]
+    #     return redirect("/")
+
+        # event = events.get_private_event(private_key)
+        # if event:
+        #     return redirect("/event/"+str(event.id))
+        # return render_template("error.html", message="Ei löytynyt kutsukoodia")
 
     try:
         user_id = users.get_my_id()
@@ -22,10 +24,16 @@ def index():
         user_id = 0
 
     return render_template("index.html", events=events.get_public_events(),
-                            private_events=events.get_private_events(),
                             enrolled_events=events.get_enrolled_events(user_id),
                             my_events = events.get_my_events(user_id), i=True)
 
+
+@app.route("/private_key_results")
+def private_key_results():
+    private_key = request.args["query"]
+    key_matches = events.get_private_events(private_key)
+
+    return render_template("private_key_results.html", matches=key_matches, i=True)
 
 @app.route("/event/<int:event_id>")
 def show_event(event_id):
@@ -92,9 +100,6 @@ def create_event():
 
         location = request.form["location"]
         private_key = None
-        # private = request.form.get("private_event")
-        # print("TESTI")
-        # print(private)
 
         if request.form.get("private_event"):
             private_key = request.form["private_key"]
@@ -103,8 +108,6 @@ def create_event():
             elif len(private_key) > 16:
                 return render_template("error.html",
                                     message="Kutsukoodi enintään 16 merkkiä")
-        # else:
-        #     private_key = None
 
         if len(name) > 50:
             return render_template("error.html",
@@ -261,11 +264,6 @@ def register():
 
 @app.route("/messages/<int:event_id>", methods=["GET", "POST"])
 def show_messages(event_id):
-    # if request.method == "GET":
-    #     event_messages = messages.get_event_messages(event_id)
-
-    #     return render_template("messages.html", messages=event_messages)
-
     if request.method == "POST":
         users.check_csrf()
         content = request.form["content"]
@@ -408,7 +406,7 @@ def add_task():
 def randomize_all():
     users.check_csrf()
     event_id = request.form["event_id"]
-    enrolments = events.get_enrolments(event_id)
+    enrolments = [e.username for e in events.get_enrolments(event_id)]
 
     tasks.randomize_all(event_id, enrolments)
 
@@ -435,4 +433,12 @@ def delete_task():
 @app.route("/passed_events")
 def show_passed_events():
     passed_events = events.get_passed_events()
-    return render_template("passed_events.html", passed_events=passed_events)
+    try:
+        user_id = users.get_my_id()
+    except:
+        user_id = None
+        
+    passed_private_events = events.get_passed_private_events(user_id)
+
+    return render_template("passed_events.html", passed_events=passed_events,
+                            passed_private_events=passed_private_events)

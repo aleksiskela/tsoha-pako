@@ -62,3 +62,4 @@ def check_csrf():
 def delete_account(user_id):
     sql = "UPDATE users SET password='' WHERE id=:user_id"
     db.session.execute(sql, {"user_id":user_id})
+    
