@@ -7,7 +7,12 @@
     {% for message in messages %}
         <tr>
             <td>
-                {{message.username}}: {{message.content}}
+                {% if message.username %}
+                {{message.username}}
+                {% else %}
+                <i style="color: rgb(175, 21, 21);">POISTETTU TUNNUS</i>
+                {% endif %}:
+                {{message.content}}
             </td>
             <td>
                 {% if message.username == session.username and message.content != "VIESTI POISTETTU" %}

@@ -38,6 +38,8 @@ def show_event(event_id):
     description = event.description
     creator_id = event.creator_id
     creator_username = users.get_username(creator_id)
+    # if not creator_username:
+    #     creator_username = "POISTETTU"
     location = event.location
     private_key = event.private_key
 
@@ -253,6 +255,24 @@ def register():
 
         return redirect("/")
 
+@app.route("/edit_user", methods=["GET", "POST"])
+def edit_user():
+    if request.method == "POST":
+        # SALASANAN VAIHTO
+        pass
+    return render_template("edit_user.html")
+
+@app.route("/delete_account", methods=["POST"])
+def delete_account():
+    users.check_csrf()
+
+    user_id = users.get_my_id()
+    
+    events.cancel_all_enrolments(user_id)
+    users.delete_account(user_id)
+
+    return redirect("/logout")
+
 @app.route("/messages/<int:event_id>", methods=["GET", "POST"])
 def show_messages(event_id):
     if request.method == "POST":
@@ -274,7 +294,7 @@ def show_messages(event_id):
                             enrolments=enrolments, event_id=event_id, name=name)
 
 @app.route("/delete_message", methods=["POST"])
-def delete_message():
+def delete_message():       # muokkaa niin että poistettu viesti tallentuu NULL ja sitten "POISTETTU" generoidaan värikoodattuna templatessa
     users.check_csrf()
     message_id = request.form["message_id"]
     event_id = request.form["event_id"]

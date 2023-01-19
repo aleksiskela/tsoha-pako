@@ -101,6 +101,11 @@ def cancel_enrolment(event_id, user_id):
     db.session.execute(sql, {"event_id":event_id, "user_id":user_id})
     db.session.commit()
 
+def cancel_all_enrolments(user_id):
+    sql = "DELETE FROM enrolments WHERE user_id=:user_id"
+    db.session.execute(sql, {"user_id":user_id})
+    db.session.commit()
+
 def get_enrolments(event_id):
     sql = """SELECT DISTINCT u.username, e.role FROM users u, enrolments e
             WHERE u.id=e.user_id AND e.event_id=:event_id"""

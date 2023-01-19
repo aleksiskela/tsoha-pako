@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block title %} {{ session.username }} {% endblock %} <!-- titleksi käyttis -->
+{% block content %}
+<h1>{{ session.username }}</h1>
+<hr>
+<h3>Vaihda salasana</h3>
+<form action="">
+    Vanha salasana:
+    <br>
+    <input type="text">
+    <br>
+    Uusi salasana:
+    <br>
+    <input type="text">
+    <br>
+    Salasana uudestaan:
+    <br>
+    <input type="text">
+    <br>
+    <input type="submit" value="Vahvista">
+</form>
+<br>
+<form action="/delete_account" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input type="submit" value="Poista käyttäjätunnus">
+</form>
+{% endblock %}

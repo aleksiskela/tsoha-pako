@@ -60,6 +60,6 @@ def check_csrf():
         abort(403)
 
 def delete_account(user_id):
-    sql = "UPDATE users SET password='' WHERE id=:user_id"
+    sql = "UPDATE users SET username=NULL, password=NULL WHERE id=:user_id"
     db.session.execute(sql, {"user_id":user_id})
-    
+    db.session.commit()
