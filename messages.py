@@ -13,7 +13,7 @@ def send_message(content, user_id, event_id):
     db.session.commit()
 
 def delete_message(message_id):
-    sql = "UPDATE messages SET content='VIESTI POISTETTU' WHERE id=:message_id"
+    sql = "UPDATE messages SET content=NULL WHERE id=:message_id"
     db.session.execute(sql, {"message_id":message_id})
     db.session.commit()
     

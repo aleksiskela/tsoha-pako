@@ -38,7 +38,7 @@ def get_passed_private_events(user_id):
 def get_private_event(private_key):
     sql = "SELECT id from events where private_key=:private_key"
     event = db.session.execute(sql, {"private_key":private_key}).fetchone()
-    
+
     return get_event(event.id)
 
 def get_enrolled_events(user_id):

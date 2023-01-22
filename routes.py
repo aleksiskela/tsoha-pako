@@ -9,7 +9,6 @@ import tasks
 
 @app.route("/")
 def index():
-
     try:
         user_id = users.get_my_id()
     except KeyError:
@@ -258,8 +257,27 @@ def register():
 @app.route("/edit_user", methods=["GET", "POST"])
 def edit_user():
     if request.method == "POST":
-        # SALASANAN VAIHTO
-        pass
+        users.check_csrf()
+        user_id = users.get_my_id()
+
+        old_password = request.form["old_password"]
+        new_password = request.form["new_password"]
+        password_check = request.form["password_check"]
+
+        if not users.check_password(user_id, old_password):
+            return render_template("error.html", message="Väärä salasana")
+
+        if new_password != password_check:
+            return render_template("error.html",
+                                    message="Salasanat eivät täsmää")
+
+        if not 3 <= new_password <=30:
+            return render_template("error.html", message="Salasanan tulee olla 3-30 merkkiä")
+
+        users.change_password(user_id, new_password)
+
+        return redirect("/")
+
     return render_template("edit_user.html")
 
 @app.route("/delete_account", methods=["POST"])
@@ -267,7 +285,7 @@ def delete_account():
     users.check_csrf()
 
     user_id = users.get_my_id()
-    
+
     events.cancel_all_enrolments(user_id)
     users.delete_account(user_id)
 
@@ -294,7 +312,7 @@ def show_messages(event_id):
                             enrolments=enrolments, event_id=event_id, name=name)
 
 @app.route("/delete_message", methods=["POST"])
-def delete_message():       # muokkaa niin että poistettu viesti tallentuu NULL ja sitten "POISTETTU" generoidaan värikoodattuna templatessa
+def delete_message():
     users.check_csrf()
     message_id = request.form["message_id"]
     event_id = request.form["event_id"]

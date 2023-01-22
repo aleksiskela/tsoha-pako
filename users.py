@@ -38,6 +38,21 @@ def register(username, password):
 
     return login(username, password)
 
+def check_password(user_id, password):
+    sql = "SELECT password FROM users WHERE id=:user_id"
+    result = db.session.execute(sql, {"user_id":user_id}).fetchone()
+
+    if check_password_hash(result.password, password):
+        return True
+    return False
+
+def change_password(user_id, new_password):
+    hash_value = generate_password_hash(new_password)
+
+    sql = "UPDATE users SET password=:hash_value WHERE id=:user_id"
+    db.session.execute(sql, {"hash_value":hash_value, "user_id":user_id})
+    db.session.commit()
+
 def get_all_users():
     sql = "SELECT username FROM users"
     all_users = db.session.execute(sql).fetchall()
@@ -63,3 +78,4 @@ def delete_account(user_id):
     sql = "UPDATE users SET username=NULL, password=NULL WHERE id=:user_id"
     db.session.execute(sql, {"user_id":user_id})
     db.session.commit()
+    

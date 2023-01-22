@@ -1,10 +1,14 @@
+
 body {
     margin: auto;
     max-width: 45em;
-    background-color: #f4dbcc;
+    background-color: #88d5d5;
+    background-image: repeating-conic-gradient(#88d5d5 30%, #ffba67 40%, #f4d2bc 50%);
+    background-size: cover;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
     font-size:0.95em;
     color:rgb(32, 39, 66);
+    height: 100%;
 }
 
 .i {
@@ -13,25 +17,39 @@ body {
     background-size:contain;
     height: 100%;
     width: 100%;
+    padding-left: 0;
+    margin-left: 0;
 }
 
 .i h1 {
     padding-top: 33%;
 }
 
+.bg {
+    background-color: #f4d2bc;
+    background-size: cover;
+    min-height: 100vh;
+    /* border: 2px solid #2b7171; */
+    border: 2px solid #559696;
+}
+
 .content {
     padding: 2em 1em 2em 1em;
+    /* background-color: #f4dbcc; */
 }
 
 
 h1 {
-    color:rgb(135, 140, 43);
+    /* color:rgb(135, 140, 43); */
+    /* color: #ffba67; */
+    color: #4a9a9a;
     text-shadow: 0 0 1px black;
 }
 
 input[type="text"], textarea, input[type="password"],
 input[type="date"], input[type="time"] {
-    background-color: rgb(191, 208, 214);
+    /* background-color: rgb(191, 208, 214); */
+    background-color: #e9e6e6;
 }
 
 input[type="submit"] {
@@ -40,15 +58,17 @@ input[type="submit"] {
     
 }
 
-a:link {
+a:link, a:visited {
     text-decoration: none;
-    color:rgb(82, 86, 17);
+    /* color:rgb(82, 86, 17); */
+    color: #2b7171;
 }
 
-a:visited {
+/* a:visited {
     text-decoration: none;
-    color:rgb(82, 86, 17)
-}
+    /* color:rgb(82, 86, 17) */
+    color: #398585;
+} */
 
 a:hover {
     color:crimson;
@@ -66,6 +86,11 @@ hr {
 table {
     table-layout: fixed;
     width: 100%;
+}
+
+.i table {
+    background-color: #e9e6e6;
+    border: 2px solid #559696;
 }
 
 #home {

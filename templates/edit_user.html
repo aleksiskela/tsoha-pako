@@ -4,20 +4,21 @@
 <h1>{{ session.username }}</h1>
 <hr>
 <h3>Vaihda salasana</h3>
-<form action="">
+<form action="" method="POST">
     Vanha salasana:
     <br>
-    <input type="text">
+    <input type="password" name="old_password" required>
     <br>
     Uusi salasana:
     <br>
-    <input type="text">
+    <input type="password" name="new_password" minlength="3" maxlength="30" required>
     <br>
     Salasana uudestaan:
     <br>
-    <input type="text">
+    <input type="password" name="password_check" required>
     <br>
-    <input type="submit" value="Vahvista">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input type="submit" value="Vaihda salasana">
 </form>
 <br>
 <form action="/delete_account" method="POST">
