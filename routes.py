@@ -37,8 +37,6 @@ def show_event(event_id):
     description = event.description
     creator_id = event.creator_id
     creator_username = users.get_username(creator_id)
-    # if not creator_username:
-    #     creator_username = "POISTETTU"
     location = event.location
     private_key = event.private_key
 
@@ -47,6 +45,13 @@ def show_event(event_id):
     except KeyError:
         rights = False
 
+    if private_key:
+        try:
+            if users.session["username"]:
+                if not rights and users.session["username"] not in enr_unames:
+                    return render_template("error.html", message="Ei lupaa tarkastella tapahtumaa")
+        except KeyError:
+            return render_template("error.html", message="Ei lupaa tarkastella tapahtumaa")
 
     if not location:
         location = "-"

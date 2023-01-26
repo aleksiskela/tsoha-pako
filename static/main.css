@@ -53,8 +53,11 @@ input[type="date"], input[type="time"] {
 }
 
 input[type="submit"] {
-    background-color:rgb(75, 79, 11);
-    color:rgb(249, 252, 195);
+    /* background-color:rgb(75, 79, 11); */
+    background-color: #f6c78e;
+    /* color:rgb(249, 252, 195); */
+    color: #2e6161;
+
     
 }
 
@@ -66,7 +69,7 @@ a:link, a:visited {
 
 /* a:visited {
     text-decoration: none;
-    /* color:rgb(82, 86, 17) */
+    /* color:rgb(82, 86, 17)
     color: #398585;
 } */
 

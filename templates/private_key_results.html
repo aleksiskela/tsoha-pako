@@ -9,7 +9,19 @@
     <ul>
         {% for event in matches %}
         <li>
-            <a href="/event/{{ event.id }}">{{event.name}}</a> ({{event.datetime.strftime("%d.%m.%Y")}}), järjestäjä {{event.username}}
+            <!-- <a href="/event/{{ event.id }}">{{ event.name }}</a>  <button>Osallistu</button> -->
+            <b>{{ event.name }}</b> <br> &#128197; {{ event.datetime.strftime("%d.%m.%Y") }} <br> &#9875; {{ event.username }}
+            {% if session.username %}
+            <form action="/enrol" method="POST">
+                <input type="hidden" name="event_id" value="{{ event.id }}">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <input type="hidden" name="role" value="1">
+                <input type="submit" value="Osallistu">
+            </form>
+            {% else %}
+            <br>
+            Kirjaudu sisään osallistuaksesi
+            {% endif %}
         </li>
         {% endfor %}
     </ul>
