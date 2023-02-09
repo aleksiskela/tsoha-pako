@@ -1,28 +1,32 @@
 {% extends "layout.html" %}
-{% block title %} {{ session.username }} {% endblock %} <!-- titleksi käyttis -->
+{% block title %} {{ session.username }} {% endblock %}
 {% block content %}
-<h1>{{ session.username }}</h1>
-<hr>
-<h3>Vaihda salasana</h3>
-<form action="" method="POST">
-    Vanha salasana:
+{% if session.username %}
+    <h1>{{ session.username }}</h1>
+    <hr>
+    <h3>Vaihda salasana</h3>
+    <form action="" method="POST">
+        Vanha salasana:
+        <br>
+        <input type="password" name="old_password" required>
+        <br>
+        Uusi salasana:
+        <br>
+        <input type="password" name="new_password" minlength="3" maxlength="30" required>
+        <br>
+        Salasana uudestaan:
+        <br>
+        <input type="password" name="password_check" required>
+        <br>
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input type="submit" value="Vaihda salasana">
+    </form>
     <br>
-    <input type="password" name="old_password" required>
-    <br>
-    Uusi salasana:
-    <br>
-    <input type="password" name="new_password" minlength="3" maxlength="30" required>
-    <br>
-    Salasana uudestaan:
-    <br>
-    <input type="password" name="password_check" required>
-    <br>
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="submit" value="Vaihda salasana">
-</form>
-<br>
-<form action="/delete_account" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="submit" value="Poista käyttäjätunnus">
-</form>
-{% endblock %}
+    <form action="/delete_account" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input type="submit" value="Poista käyttäjätunnus">
+    </form>
+{% else %}
+<h3>Kuka mitä hä?</h3>
+{% endif %}
+{% endblock %}  

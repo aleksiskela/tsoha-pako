@@ -26,6 +26,27 @@ def private_key_results():
 
     return render_template("private_key_results.html", matches=key_matches, i=True)
 
+def private_rights(event_id):
+    event = events.get_event(event_id)
+    enrolments = events.get_enrolments(event_id)
+    enr_unames = [enrolled.username for enrolled in enrolments]
+
+    try:
+        rights = events.check_rights(event_id, users.get_my_id())
+    except KeyError:
+        rights = False
+
+    if event.private_key:
+        try:
+            if users.session["username"]:
+                if not rights and users.session["username"] not in enr_unames:
+                    return False
+        except KeyError:
+            return False
+
+    return True
+
+
 @app.route("/event/<int:event_id>")
 def show_event(event_id):
     event = events.get_event(event_id)
@@ -45,13 +66,17 @@ def show_event(event_id):
     except KeyError:
         rights = False
 
-    if private_key:
-        try:
-            if users.session["username"]:
-                if not rights and users.session["username"] not in enr_unames:
-                    return render_template("error.html", message="Ei lupaa tarkastella tapahtumaa")
-        except KeyError:
+    # if private_key:
+    #     try:
+    #         if users.session["username"]:
+    #             if not rights and users.session["username"] not in enr_unames:
+    #                 return render_template("error.html", message="Ei lupaa tarkastella tapahtumaa")
+    #     except KeyError:
+    #         return render_template("error.html", message="Ei lupaa tarkastella tapahtumaa")
+
+    if not private_rights(event_id):
             return render_template("error.html", message="Ei lupaa tarkastella tapahtumaa")
+
 
     if not location:
         location = "-"
@@ -64,7 +89,7 @@ def show_event(event_id):
 
     try:
         timestamp = event.datetime
-        date = timestamp.strftime("%d.%m.%y")
+        date = timestamp.strftime("%d.%m.%Y")
         time = timestamp.strftime("%H:%M")
         countdown = timestamp.date()-datetime.today().date()
         countdown = countdown.days
@@ -138,6 +163,14 @@ def edit_event(event_id):
         except AttributeError:
             date = ""
             time = ""
+
+        try:
+            rights = events.check_rights(event.id, users.get_my_id())
+        except KeyError:
+            rights = False
+
+        if not rights:
+            return render_template("error.html", message="Ei lupaa")
 
         return render_template("edit_event.html", event_id=event_id,
                                 event=event, name=name, date=date, time=time)
@@ -313,6 +346,9 @@ def show_messages(event_id):
     enrolments = [e.username for e in events.get_enrolments(event_id)]
     name = events.get_event_name(event_id)
 
+    if not private_rights(event_id):
+            return render_template("error.html", message="Ei lupaa tarkastella tapahtumaa")
+
     return render_template("/messages.html", messages=event_messages,
                             enrolments=enrolments, event_id=event_id, name=name)
 
@@ -357,6 +393,9 @@ def show_votes(event_id):
     except KeyError:
         rights = False
 
+    if not private_rights(event_id):
+            return render_template("error.html", message="Ei lupaa tarkastella tapahtumaa")
+
     try:
         already_voted = voting.get_already_voted(users.get_my_id())
     except KeyError:
@@ -395,10 +434,14 @@ def show_tasks(event_id):
     event_tasks = tasks.get_event_tasks(event_id)
     enrolments = [e.username for e in events.get_enrolments(event_id)]
     name = events.get_event_name(event_id)
+
     try:
         rights = events.check_rights(event_id, users.get_my_id())
     except KeyError:
         rights = False
+
+    if not private_rights(event_id):
+            return render_template("error.html", message="Ei lupaa tarkastella tapahtumaa")
 
     return render_template("tasks.html", event_tasks=event_tasks, rights=rights,
                             event_id=event_id, enrolments=enrolments, name=name)

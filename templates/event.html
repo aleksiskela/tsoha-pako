@@ -34,12 +34,12 @@ Paikka: {{ location }}</p>
             <td>{{enrolled.username}}</td>
             {% if rights %}
                 <td style="text-align: center;">
-                    {% if enrolled.role == 0 %}
-                        Estetty
-                    {% elif enrolled.role == 1 %}
-                        Vieras
-                    {% elif enrolled.role == 2 %}
+                    {% if enrolled.role == 2 or enrolled.username == creator_username %}
                         Järjestäjä
+                    {% elif enrolled.role == 1 %}
+                         Vieras
+                    {% elif enrolled.role == 0 %}
+                        Estetty
                     {% endif %}
                 </td>
                 <td> 

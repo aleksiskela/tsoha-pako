@@ -57,8 +57,10 @@ input[type="submit"] {
     background-color: #f6c78e;
     /* color:rgb(249, 252, 195); */
     color: #2e6161;
+}
 
-    
+select {
+    background-color: #d2d0d0;
 }
 
 a:link, a:visited {
@@ -89,12 +91,14 @@ hr {
 table {
     table-layout: fixed;
     width: 100%;
-}
-
-.i table {
     background-color: #e9e6e6;
     border: 2px solid #559696;
 }
+
+/* .i table {
+    background-color: #e9e6e6;
+    border: 2px solid #559696;
+} */
 
 #home {
     position: absolute;
